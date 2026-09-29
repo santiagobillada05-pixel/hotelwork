@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { roomsApi } from "../api/roomsApi";
 import { reservationsApi } from "../api/reservationsApi";
@@ -109,7 +109,7 @@ export default function RoomDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-slate-50">
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-slate-50 dark:bg-slate-900/50">
         <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
       </div>
     );
@@ -118,7 +118,7 @@ export default function RoomDetailPage() {
   if (!room) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-xl font-bold text-slate-800 mb-2">Habitacion no encontrada</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Habitacion no encontrada</h2>
         <Link to="/" className="text-brand-600 font-bold hover:underline">
           Volver al buscador
         </Link>
@@ -146,11 +146,11 @@ export default function RoomDetailPage() {
       : [];
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-brand-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-brand-600 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Volver a Habitaciones
         </button>
@@ -169,18 +169,28 @@ export default function RoomDetailPage() {
                 <span className="bg-brand-600 text-white font-extrabold text-sm px-3.5 py-1 rounded-full shadow">
                   Habitacion {room.room_number}
                 </span>
-                <span className="bg-white/90 backdrop-blur-md text-slate-900 font-bold text-sm px-3 py-1 rounded-full shadow">
+                <span className="bg-white dark:bg-slate-800/90 backdrop-blur-md text-slate-900 dark:text-slate-50 font-bold text-sm px-3 py-1 rounded-full shadow">
                   {room.room_type?.toUpperCase()}
                 </span>
               </div>
+              
+              {/* Banner Fuera de servicio */}
+              {!room.is_room_bookable && (
+                <div className="absolute inset-x-0 bottom-0 bg-rose-600/95 backdrop-blur-md py-3 z-20 flex justify-center items-center shadow-[0_-4px_20px_rgba(225,29,72,0.3)] border-t border-rose-500/50">
+                  <div className="flex items-center gap-2 text-white font-black text-sm tracking-wide">
+                    <AlertCircle className="w-5 h-5" />
+                    ESTA HABITACIÓN ESTÁ FUERA DE SERVICIO
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-6">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
               <div>
-                <h1 className="text-2xl font-black text-slate-900 mb-2">
+                <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 mb-2">
                   Habitacion {room.room_number} - Categoria {room.room_type}
                 </h1>
-                <div className="flex items-center gap-6 text-xs text-slate-500 font-semibold">
+                <div className="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400 font-semibold">
                   <span className="flex items-center gap-1.5">
                     <Users className="w-4 h-4 text-brand-600" /> Capacidad: {room.capacity} persona(s)
                   </span>
@@ -190,26 +200,26 @@ export default function RoomDetailPage() {
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-6">
-                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-2">
+              <div className="border-t border-slate-100 dark:border-slate-700/50 pt-6">
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider mb-2">
                   Descripcion
                 </h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
                   {room.description ||
                     "Disfrute de una estancia placentera con todas las comodidades modernas, servicio de primera y el ambiente optimo tanto para descanso como para viajes de trabajo."}
                 </p>
               </div>
 
               {/* Amenities */}
-              <div className="border-t border-slate-100 pt-6">
-                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">
+              <div className="border-t border-slate-100 dark:border-slate-700/50 pt-6">
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider mb-3">
                   Amenidades y Servicios Incluidos
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {amenitiesList.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 p-2.5 bg-slate-50 rounded-xl text-xs font-semibold text-slate-700 border border-slate-100"
+                      className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700/50"
                     >
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                       <span>{item}</span>
@@ -219,11 +229,11 @@ export default function RoomDetailPage() {
               </div>
 
               {/* Policies */}
-              <div className="border-t border-slate-100 pt-6">
-                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">
+              <div className="border-t border-slate-100 dark:border-slate-700/50 pt-6">
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider mb-3">
                   Politicas del Hotel
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-600">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-600 dark:text-slate-300">
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 text-brand-600 shrink-0" />
                     <span>Check-in a partir de las 15:00 hrs</span>
@@ -247,14 +257,18 @@ export default function RoomDetailPage() {
 
           {/* Booking Widget Sidebar */}
           <div>
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xl sticky top-24">
-              <div className="flex items-baseline justify-between mb-6 pb-4 border-b border-slate-100">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl sticky top-24">
+              <div className="flex items-baseline justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-700/50">
                 <div>
-                  <span className="text-3xl font-black text-slate-900">${room.price_per_night}</span>
-                  <span className="text-xs text-slate-500 font-bold"> USD / noche</span>
+                  <span className="text-3xl font-black text-slate-900 dark:text-slate-50">${room.price_per_night}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-bold"> USD / noche</span>
                 </div>
-                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
-                  Disponible
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                  room.is_room_bookable
+                    ? "text-emerald-600 bg-emerald-50"
+                    : "text-rose-600 bg-rose-50"
+                }`}>
+                  {room.guest_status_label || (room.is_room_bookable ? "Disponible" : "Fuera de servicio")}
                 </span>
               </div>
 
@@ -263,8 +277,8 @@ export default function RoomDetailPage() {
                   <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h4 className="text-base font-bold text-slate-900 mb-1">Reserva Registrada!</h4>
-                  <p className="text-xs text-slate-500 mb-4">
+                  <h4 className="text-base font-bold text-slate-900 dark:text-slate-50 mb-1">Reserva Registrada!</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
                     Tu estancia ha sido confirmada satisfactoriamente.
                   </p>
                   <button
@@ -273,6 +287,14 @@ export default function RoomDetailPage() {
                   >
                     Ir a Mis Reservas
                   </button>
+                </div>
+              ) : !room.is_room_bookable ? (
+                <div className="text-center py-8 px-4 bg-rose-50 border border-rose-100 rounded-2xl">
+                  <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3 opacity-80" />
+                  <h4 className="text-sm font-bold text-rose-900 mb-2">Habitación no disponible</h4>
+                  <p className="text-xs text-rose-700 font-medium">
+                    Esta habitación se encuentra fuera de servicio y no puede ser reservada en este momento.
+                  </p>
                 </div>
               ) : (
                 <form onSubmit={handleBooking} className="space-y-4">
@@ -285,7 +307,7 @@ export default function RoomDetailPage() {
 
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                         Entrada (Check-in)
                       </label>
                       <input
@@ -294,12 +316,12 @@ export default function RoomDetailPage() {
                         value={checkIn}
                         onChange={(e) => setCheckIn(e.target.value)}
                         required
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                         Salida (Check-out)
                       </label>
                       <input
@@ -308,18 +330,18 @@ export default function RoomDetailPage() {
                         value={checkOut}
                         onChange={(e) => setCheckOut(e.target.value)}
                         required
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                         Huespedes (Max: {room.capacity})
                       </label>
                       <select
                         value={numGuests}
                         onChange={(e) => setNumGuests(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       >
                         {Array.from({ length: room.capacity }, (_, i) => i + 1).map((n) => (
                           <option key={n} value={n}>
@@ -330,7 +352,7 @@ export default function RoomDetailPage() {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                         Peticiones Especiales (Opcional)
                       </label>
                       <textarea
@@ -338,24 +360,24 @@ export default function RoomDetailPage() {
                         value={specialRequests}
                         onChange={(e) => setSpecialRequests(e.target.value)}
                         placeholder="Cama matrimonial, piso silencioso..."
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       />
                     </div>
                   </div>
 
                   {calculations && (
-                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-1.5 text-xs">
-                      <div className="flex justify-between text-slate-600">
+                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 space-y-1.5 text-xs">
+                      <div className="flex justify-between text-slate-600 dark:text-slate-300">
                         <span>
                           {calculations.nights} noche(s) x ${room.price_per_night}
                         </span>
-                        <span className="font-semibold text-slate-900">${calculations.base} USD</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-50">${calculations.base} USD</span>
                       </div>
-                      <div className="flex justify-between text-slate-600">
+                      <div className="flex justify-between text-slate-600 dark:text-slate-300">
                         <span>IVA (19%)</span>
-                        <span className="font-semibold text-slate-900">${calculations.tax} USD</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-50">${calculations.tax} USD</span>
                       </div>
-                      <div className="border-t border-slate-200 pt-2 flex justify-between font-black text-slate-900 text-sm">
+                      <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between font-black text-slate-900 dark:text-slate-50 text-sm">
                         <span>Total</span>
                         <span className="text-brand-700 font-extrabold text-base">
                           ${calculations.total} USD

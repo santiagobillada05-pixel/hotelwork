@@ -40,6 +40,9 @@ def create_reservation(
     room = db.query(Room).filter(Room.id == res_in.room_id, Room.is_active == True).first()
     if not room:
         raise NotFoundException("La habitación solicitada no existe o no está disponible")
+        
+    if room.status != RoomStatus.available:
+        raise ConflictException("HABITACION_FUERA_DE_SERVICIO")
 
     if res_in.num_guests > room.capacity:
         raise BadRequestException(f"La habitación seleccionada tiene capacidad máxima para {room.capacity} persona(s)")
@@ -180,6 +183,8 @@ def update_reservation(
         raise BadRequestException(f"No se puede modificar una reserva en estado '{reservation.status.value}'")
 
     room = db.query(Room).filter(Room.id == reservation.room_id).first()
+    if (res_in.check_in_date or res_in.check_out_date) and room.status != RoomStatus.available:
+        raise ConflictException("HABITACION_FUERA_DE_SERVICIO")
 
     new_check_in = res_in.check_in_date or reservation.check_in_date
     new_check_out = res_in.check_out_date or reservation.check_out_date

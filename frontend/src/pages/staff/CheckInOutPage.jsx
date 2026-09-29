@@ -26,9 +26,16 @@ export default function CheckInOutPage() {
 
   // Payment modal state
   const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentCurrency, setPaymentCurrency] = useState('USD');
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [paymentRef, setPaymentRef] = useState('');
   const [paymentSubmitting, setPaymentSubmitting] = useState(false);
+
+  const currencies = {
+    USD: { rate: 1, symbol: '$' },
+    COP: { rate: 4000, symbol: '$' },
+    EUR: { rate: 0.92, symbol: '€' }
+  };
 
   const fetchReservations = async () => {
     setLoading(true);
@@ -80,16 +87,56 @@ export default function CheckInOutPage() {
     }
     setPaymentModalData(res);
     setPaymentModalPaymentId(paymentId);
+    setPaymentCurrency('USD');
     setPaymentAmount(res.final_total.toString());
     setPaymentRef(`TXN-${Date.now().toString().slice(-6)}`);
+  };
+
+  const handleCurrencyChange = (newCurrency) => {
+    if (!paymentModalData) return;
+    const rate = currencies[newCurrency].rate;
+    let newAmount = paymentModalData.final_total * rate;
+    
+    if (newCurrency === 'COP') {
+      setPaymentAmount(new Intl.NumberFormat('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(newAmount));
+    } else {
+      setPaymentAmount(newAmount.toFixed(2));
+    }
+    setPaymentCurrency(newCurrency);
+  };
+
+  const handleAmountChange = (e) => {
+    const val = e.target.value;
+    if (paymentCurrency === 'COP') {
+      // Allow only numbers
+      const numericVal = val.replace(/\D/g, '');
+      if (!numericVal) {
+        setPaymentAmount('');
+        return;
+      }
+      setPaymentAmount(new Intl.NumberFormat('es-CO').format(parseInt(numericVal, 10)));
+    } else {
+      setPaymentAmount(val);
+    }
   };
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     setPaymentSubmitting(true);
     try {
+      let parsedAmount = paymentAmount;
+      if (typeof parsedAmount === 'string') {
+        if (paymentCurrency === 'COP') {
+          parsedAmount = parseFloat(parsedAmount.replace(/\./g, '').replace(/,/g, ''));
+        } else {
+          parsedAmount = parseFloat(parsedAmount);
+        }
+      }
+      
       await paymentsApi.confirmPayment(paymentModalPaymentId, {
-        amount: parseFloat(paymentAmount),
+        amount: parsedAmount,
+        currency: paymentCurrency,
+        exchange_rate: currencies[paymentCurrency].rate,
         payment_method: paymentMethod,
         transaction_ref: paymentRef,
       });
@@ -112,24 +159,24 @@ export default function CheckInOutPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2.5">
               <ClipboardList className="w-7 h-7 text-brand-600" />
               Recepción: Check-in, Check-out & Pagos
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
               Control de estancia de huéspedes en recepción.
             </p>
           </div>
 
           <button
             onClick={fetchReservations}
-            className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-700 shadow-sm transition-all"
+            className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm transition-all"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Actualizar Lista
@@ -144,16 +191,16 @@ export default function CheckInOutPage() {
         )}
 
         {loading ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-slate-200">
+          <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
             <Loader2 className="w-8 h-8 animate-spin text-brand-600 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-500">Cargando reservas en recepción...</p>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Cargando reservas en recepción...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <th className="py-4 px-6">Reserva / Huésped</th>
                     <th className="py-4 px-6">Habitación</th>
                     <th className="py-4 px-6">Fechas</th>
@@ -165,7 +212,7 @@ export default function CheckInOutPage() {
                 <tbody className="divide-y divide-slate-100 text-sm">
                   {reservations.filter((res) => res.status !== 'checked_out' && res.status !== 'cancelled').length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-12 text-center text-slate-500 font-medium">
+                      <td colSpan={6} className="py-12 text-center text-slate-500 dark:text-slate-400 font-medium">
                         No hay reservas activas pendientes en recepción.
                       </td>
                     </tr>
@@ -173,29 +220,29 @@ export default function CheckInOutPage() {
                     reservations
                       .filter((res) => res.status !== 'checked_out' && res.status !== 'cancelled')
                       .map((res) => (
-                        <tr key={res.id} className="hover:bg-slate-50/70 transition-colors">
+                        <tr key={res.id} className="hover:bg-slate-50 dark:bg-slate-900/50/70 transition-colors">
                           <td className="py-4 px-6">
-                            <span className="font-extrabold text-slate-900 block">
+                            <span className="font-extrabold text-slate-900 dark:text-slate-50 block">
                               Reserva #{res.id}
                             </span>
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
                               Usuario #{res.user_id} • {res.num_guests} huésped(es)
                             </span>
                           </td>
 
                           <td className="py-4 px-6">
-                            <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-xs">
+                            <span className="font-bold text-slate-800 dark:text-slate-100 bg-slate-100 px-2.5 py-1 rounded-lg text-xs">
                               Hab. #{res.room_id}
                             </span>
                           </td>
 
-                          <td className="py-4 px-6 text-xs text-slate-600 font-medium">
+                          <td className="py-4 px-6 text-xs text-slate-600 dark:text-slate-300 font-medium">
                             <div>Check-in: {res.check_in_date}</div>
                             <div>Check-out: {res.check_out_date}</div>
                           </td>
 
                           <td className="py-4 px-6">
-                            <span className="font-black text-slate-900">
+                            <span className="font-black text-slate-900 dark:text-slate-50">
                               ${res.final_total} USD
                             </span>
                             {res.is_paid && (
@@ -240,7 +287,7 @@ export default function CheckInOutPage() {
                                   disabled={actionLoading === res.id || !res.is_paid}
                                   className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm transition-all ${
                                     !res.is_paid 
-                                      ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60' 
+                                      ? 'bg-slate-300 text-slate-500 dark:text-slate-400 cursor-not-allowed opacity-60' 
                                       : 'bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50'
                                   }`}
                                 >
@@ -254,9 +301,9 @@ export default function CheckInOutPage() {
                             {res.payments?.find(p => p.status === 'pending') && !res.is_paid && (
                               <button
                                 onClick={() => handleOpenPaymentModal(res, res.payments.find(p => p.status === 'pending').id)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
                               >
-                                <CreditCard className="w-3.5 h-3.5 text-slate-500" />
+                                <CreditCard className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                                 Registrar Pago
                               </button>
                             )}
@@ -283,47 +330,63 @@ export default function CheckInOutPage() {
         {/* Payment Modal */}
         {paymentModalData && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-700/50">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-brand-600" />
                   Registrar Pago de Reserva
                 </h3>
                 <button
                   onClick={() => setPaymentModalData(null)}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-full"
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-300 rounded-full"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <p className="text-xs text-slate-500 mb-4">
-                Reserva #{paymentModalData.id} • Monto a facturar: ${paymentModalData.final_total} USD
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                Reserva #{paymentModalData.id} • Monto base: ${paymentModalData.final_total} USD
               </p>
 
               <form onSubmit={handlePaymentSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Monto (USD)
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                    Moneda
                   </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                  />
+                  <select
+                    value={paymentCurrency}
+                    onChange={(e) => handleCurrencyChange(e.target.value)}
+                    className="w-full mb-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  >
+                    {Object.keys(currencies).map((curr) => (
+                      <option key={curr} value={curr}>{curr}</option>
+                    ))}
+                  </select>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
+                    Monto a Pagar ({paymentCurrency})
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2.5 text-slate-400 font-bold">
+                      {currencies[paymentCurrency].symbol}
+                    </span>
+                    <input
+                      type="text"
+                      required
+                      value={paymentAmount}
+                      onChange={handleAmountChange}
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-8 pr-3 py-2 text-sm font-bold text-slate-900 dark:text-slate-50 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
                     Método de Pago
                   </label>
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   >
                     <option value="credit_card">Tarjeta de Crédito</option>
                     <option value="debit_card">Tarjeta de Débito</option>
@@ -333,7 +396,7 @@ export default function CheckInOutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
                     Referencia de Transacción
                   </label>
                   <input
@@ -341,7 +404,7 @@ export default function CheckInOutPage() {
                     required
                     value={paymentRef}
                     onChange={(e) => setPaymentRef(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -356,7 +419,7 @@ export default function CheckInOutPage() {
                   <button
                     type="button"
                     onClick={() => setPaymentModalData(null)}
-                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all"
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-all"
                   >
                     Cancelar
                   </button>

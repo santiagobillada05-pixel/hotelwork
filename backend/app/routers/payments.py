@@ -38,6 +38,9 @@ def register_payment(
     payment = Payment(
         reservation_id=reservation.id,
         amount=payment_in.amount,
+        currency=payment_in.currency,
+        exchange_rate=payment_in.exchange_rate,
+        base_currency="USD",
         payment_method=payment_in.payment_method,
         status=PaymentStatus.completed,
         transaction_ref=payment_in.transaction_ref,
@@ -107,6 +110,8 @@ def confirm_payment(
 
     # Update payment to completed
     payment.amount = payment_in.amount
+    payment.currency = payment_in.currency
+    payment.exchange_rate = payment_in.exchange_rate
     payment.payment_method = payment_in.payment_method
     payment.transaction_ref = payment_in.transaction_ref
     payment.status = PaymentStatus.completed
@@ -170,7 +175,12 @@ def get_payments_for_reservation(
 
     payments = db.query(Payment).filter(Payment.reservation_id == reservation_id).all()
     data = [PaymentResponse.model_validate(p).model_dump() for p in payments]
-    total_paid = sum(p.amount for p in payments if p.status == PaymentStatus.completed)
+    
+    total_paid = 0.0
+    for p in payments:
+        if p.status == PaymentStatus.completed:
+            rate = getattr(p, "exchange_rate", 1.0)
+            total_paid += (p.amount / rate)
 
     return success_response(
         data={

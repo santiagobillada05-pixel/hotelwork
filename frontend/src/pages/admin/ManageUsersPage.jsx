@@ -104,15 +104,15 @@ export default function ManageUsersPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2.5">
               <Users className="w-7 h-7 text-brand-600" />
               Gestión de Usuarios (RF11)
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
               Consulta usuarios, edita datos de contacto y controla el estado de las cuentas
             </p>
           </div>
@@ -127,7 +127,7 @@ export default function ManageUsersPage() {
             </Link>
             <button
               onClick={fetchUsers}
-              className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 shadow-sm transition-all"
+              className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900/50 rounded-xl text-slate-700 dark:text-slate-200 shadow-sm transition-all"
               title="Actualizar"
             >
               <RefreshCw className="w-4 h-4" />
@@ -136,7 +136,7 @@ export default function ManageUsersPage() {
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm mb-6">
           <form onSubmit={handleSearchSubmit} className="flex gap-3">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -145,7 +145,7 @@ export default function ManageUsersPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por correo, nombre o documento..."
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
             </div>
             <button
@@ -167,14 +167,14 @@ export default function ManageUsersPage() {
         {loading ? (
           <div className="text-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-brand-600 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-500">Cargando usuarios...</p>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Cargando usuarios...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <th className="py-4 px-6">Usuario / Email</th>
                     <th className="py-4 px-6">Documento</th>
                     <th className="py-4 px-6">Teléfono</th>
@@ -185,14 +185,14 @@ export default function ManageUsersPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
                   {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={u.id} className="hover:bg-slate-50 dark:bg-slate-900/50/70 transition-colors">
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-brand-100 text-brand-700 font-bold rounded-full flex items-center justify-center text-xs">
                             {u.first_name?.charAt(0) || 'U'}
                           </div>
                           <div>
-                            <span className="font-extrabold text-slate-900 block">
+                            <span className="font-extrabold text-slate-900 dark:text-slate-50 block">
                               {u.first_name} {u.last_name}
                             </span>
                             <span className="text-xs text-slate-400">{u.email}</span>
@@ -200,11 +200,11 @@ export default function ManageUsersPage() {
                         </div>
                       </td>
 
-                      <td className="py-4 px-6 text-xs text-slate-600 font-medium">
+                      <td className="py-4 px-6 text-xs text-slate-600 dark:text-slate-300 font-medium">
                         {u.document_id || 'No registrado'}
                       </td>
 
-                      <td className="py-4 px-6 text-xs text-slate-600 font-medium">
+                      <td className="py-4 px-6 text-xs text-slate-600 dark:text-slate-300 font-medium">
                         {u.phone || 'No registrado'}
                       </td>
 
@@ -258,15 +258,15 @@ export default function ManageUsersPage() {
       {/* Edit Modal */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-5 border-b border-slate-200">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Editar Usuario</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-50">Editar Usuario</h2>
                 <div className="mt-1">{roleBadge(editingUser.role)}</div>
               </div>
               <button
                 onClick={() => setEditingUser(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -274,51 +274,51 @@ export default function ManageUsersPage() {
             <form onSubmit={handleEditSubmit} className="p-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Nombre</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Nombre</label>
                   <input
                     type="text"
                     value={editForm.first_name}
                     onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Apellido</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Apellido</label>
                   <input
                     type="text"
                     value={editForm.last_name}
                     onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     required
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Teléfono</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Teléfono</label>
                 <input
                   type="text"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
                   placeholder="+57 300 000 0000"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Documento (Cédula / Pasaporte)</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Documento (Cédula / Pasaporte)</label>
                 <input
                   type="text"
                   value={editForm.document_id}
                   onChange={(e) => setEditForm({ ...editForm, document_id: e.target.value })}
                   placeholder="CC-12345678"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setEditingUser(null)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
                 >
                   Cancelar
                 </button>

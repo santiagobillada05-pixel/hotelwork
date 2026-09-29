@@ -14,11 +14,12 @@ import RegisterStaffPage from './pages/admin/RegisterStaffPage';
 import CheckInOutPage from './pages/staff/CheckInOutPage';
 import PagadosPage from './pages/admin/PagadosPage';
 import RecaudacionPage from './pages/RecaudacionPage';
-
+import ManualPage from './pages/ManualPage';
+import TermsPage from './pages/TermsPage';
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
+      <div className="min-h-screen flex flex-col font-sans transition-colors duration-200">
         <Navbar />
         <main className="flex-1">
           <Routes>
@@ -27,6 +28,8 @@ export default function App() {
             <Route path="/rooms/:id" element={<RoomDetailPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/manual" element={<ManualPage />} />
+            <Route path="/terminos" element={<TermsPage />} />
 
             {/* Guest Protected Routes */}
             <Route

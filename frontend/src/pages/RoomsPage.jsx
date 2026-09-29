@@ -81,7 +81,7 @@ export default function RoomsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-8">
@@ -89,20 +89,20 @@ export default function RoomsPage() {
             <Sparkles className="w-3.5 h-3.5" />
             Experiencia Hotelera Exclusiva
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-slate-50 tracking-tight">
             Encuentra tu habitación ideal en <span className="text-brand-600">HotelWork</span>
           </h1>
-          <p className="text-slate-600 text-sm mt-2">
+          <p className="text-slate-600 dark:text-slate-300 text-sm mt-2">
             Verifica disponibilidad en tiempo real, consulta tarifas transparentes y reserva en segundos.
           </p>
         </div>
 
         {/* RF02: Search & Filter Box */}
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mb-10">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-10">
           <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
             {/* Check-in */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-brand-600" /> Check-in
               </label>
               <input
@@ -111,13 +111,13 @@ export default function RoomsPage() {
                 value={checkIn}
                 onChange={(e) => setCheckIn(e.target.value)}
                 required
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
             </div>
 
             {/* Check-out */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-brand-600" /> Check-out
               </label>
               <input
@@ -126,19 +126,19 @@ export default function RoomsPage() {
                 value={checkOut}
                 onChange={(e) => setCheckOut(e.target.value)}
                 required
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
             </div>
 
             {/* Room Type */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                 <Bed className="w-3.5 h-3.5 text-brand-600" /> Tipo
               </label>
               <select
                 value={roomType}
                 onChange={(e) => setRoomType(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
               >
                 <option value="">Todos los tipos</option>
                 <option value="single">Individual</option>
@@ -150,13 +150,13 @@ export default function RoomsPage() {
 
             {/* Guests */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5 text-brand-600" /> Huéspedes
               </label>
               <select
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
               >
                 <option value="">Cualquiera</option>
                 <option value="1">1 persona</option>
@@ -197,23 +197,23 @@ export default function RoomsPage() {
         {loading ? (
           <div className="text-center py-20">
             <Loader2 className="w-10 h-10 animate-spin text-brand-600 mx-auto mb-3" />
-            <p className="text-sm font-semibold text-slate-500">Consultando habitaciones disponibles...</p>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Consultando habitaciones disponibles...</p>
           </div>
         ) : rooms.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8">
+          <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-8">
             <Bed className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-800">No encontramos habitaciones disponibles</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">No encontramos habitaciones disponibles</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
               Intenta cambiar el rango de fechas o los filtros seleccionados para encontrar opciones libres.
             </p>
           </div>
         ) : (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-50">
                 Habitaciones Disponibles ({rooms.length})
               </h2>
-              <span className="text-xs text-slate-500 font-medium">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 Fechas: {checkIn} → {checkOut}
               </span>
             </div>

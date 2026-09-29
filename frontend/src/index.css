@@ -2,7 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  min-height: 100vh;
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100vh;
+    @apply bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-slate-900 dark:text-sky-100;
+  }
+}
+
+/* Reglas globales para Modo Oscuro: Letras en negrilla y de color diferente al blanco */
+html.dark, 
+html.dark *, 
+.dark p, .dark span, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, 
+.dark a, .dark div, .dark button, .dark input, .dark select, .dark textarea, 
+.dark th, .dark td, .dark label {
+  font-weight: 600 !important;
+}
+
+/* Reemplazar clases de texto blanco por un tono azul claro (sky-200) */
+.dark .text-slate-50, 
+.dark .dark\:text-slate-50,
+.dark .text-slate-100, 
+.dark .dark\:text-slate-100,
+.dark .text-white,
+.dark .dark\:text-white {
+  color: #bae6fd !important;
 }

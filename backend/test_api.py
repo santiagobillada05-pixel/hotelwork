@@ -287,6 +287,13 @@ def run_integration_tests():
     assert res.json()["data"]["counting_status"] == "kept"
     print("  [PASS] TEST 23: Admin updates CheckoutRecord counting status")
 
+    # Make room available again since we made it cleaning after checkout
+    client.patch(
+        f"/api/v1/rooms/{room_id}/status",
+        headers=staff_headers,
+        json={"status": "available"}
+    )
+    
     # 24. Cannot register payment on a cancelled reservation (400)
     res_cancel_res = client.post(
         "/api/v1/reservations/",

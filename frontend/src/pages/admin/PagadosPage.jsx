@@ -98,7 +98,7 @@ export default function PagadosPage() {
         );
       default:
         return (
-          <span className="bg-slate-100 text-slate-700 text-xs font-bold px-2.5 py-1 rounded-full">
+          <span className="bg-slate-100 text-slate-700 dark:text-slate-200 text-xs font-bold px-2.5 py-1 rounded-full">
             {status}
           </span>
         );
@@ -106,22 +106,22 @@ export default function PagadosPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2.5">
               <FileText className="w-7 h-7 text-brand-600" />
               Lista de Pagados & Conteo de Caja
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
               Registro histórico de check-outs para el arqueo de caja.
             </p>
           </div>
 
           <button
             onClick={() => fetchCheckouts(statusFilter)}
-            className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-700 shadow-sm transition-all"
+            className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm transition-all"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Actualizar Lista
@@ -152,7 +152,7 @@ export default function PagadosPage() {
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                 statusFilter === tab.id
                   ? 'bg-brand-600 text-white shadow-sm'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
               }`}
             >
               {tab.label}
@@ -170,14 +170,14 @@ export default function PagadosPage() {
         {loading ? (
           <div className="text-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-brand-600 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-500">Cargando registros de conteo...</p>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Cargando registros de conteo...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <th className="py-4 px-6">Huésped / Reserva</th>
                     <th className="py-4 px-6">Habitación</th>
                     <th className="py-4 px-6">Fechas Stay</th>
@@ -190,43 +190,43 @@ export default function PagadosPage() {
                 <tbody className="divide-y divide-slate-100 text-sm">
                   {checkouts.length === 0 ? (
                     <tr>
-                      <td colSpan={isAdmin ? 7 : 6} className="py-12 text-center text-slate-500 font-medium">
+                      <td colSpan={isAdmin ? 7 : 6} className="py-12 text-center text-slate-500 dark:text-slate-400 font-medium">
                         No se encontraron registros de check-out con el filtro seleccionado ({statusFilter}).
                       </td>
                     </tr>
                   ) : (
                     checkouts.map((record) => (
-                      <tr key={record.id} className="hover:bg-slate-50/70 transition-colors">
+                      <tr key={record.id} className="hover:bg-slate-50 dark:bg-slate-900/50/70 transition-colors">
                         <td className="py-4 px-6">
-                          <span className="font-extrabold text-slate-900 block">
+                          <span className="font-extrabold text-slate-900 dark:text-slate-50 block">
                             {record.guest_name}
                           </span>
-                          <span className="text-xs text-slate-500">
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
                             Reserva #{record.reservation_id}
                           </span>
                         </td>
 
                         <td className="py-4 px-6">
-                          <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-xs">
+                          <span className="font-bold text-slate-800 dark:text-slate-100 bg-slate-100 px-2.5 py-1 rounded-lg text-xs">
                             Hab. {record.room_number}
                           </span>
                         </td>
 
-                        <td className="py-4 px-6 text-xs text-slate-600 font-medium">
+                        <td className="py-4 px-6 text-xs text-slate-600 dark:text-slate-300 font-medium">
                           <div>In: {record.check_in_date}</div>
                           <div>Out: {record.check_out_date}</div>
                         </td>
 
                         <td className="py-4 px-6">
-                          <span className="font-black text-slate-900 block">
+                          <span className="font-black text-slate-900 dark:text-slate-50 block">
                             ${record.total_amount} USD
                           </span>
-                          <span className="text-xs text-slate-500 uppercase font-semibold">
+                          <span className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">
                             {record.payment_method}
                           </span>
                         </td>
 
-                        <td className="py-4 px-6 text-xs text-slate-600 font-medium">
+                        <td className="py-4 px-6 text-xs text-slate-600 dark:text-slate-300 font-medium">
                           {new Date(record.checked_out_at).toLocaleString()}
                         </td>
 

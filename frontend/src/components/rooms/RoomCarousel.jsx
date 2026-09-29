@@ -162,8 +162,8 @@ export default function RoomCarousel({ images = [], roomNumber = "", className =
                 onClick={(e) => goTo(idx, e)}
                 className={`w-1.5 h-1.5 rounded-full transition-all duration-200 focus:outline-none ${
                   idx === current
-                    ? "bg-white scale-125"
-                    : "bg-white/50 hover:bg-white/80"
+                    ? "bg-white dark:bg-slate-800 scale-125"
+                    : "bg-white dark:bg-slate-800/50 hover:bg-white dark:bg-slate-800/80"
                 }`}
                 aria-label={`Ir a foto ${idx + 1}`}
               />
@@ -183,8 +183,8 @@ export default function RoomCarousel({ images = [], roomNumber = "", className =
                   onClick={(e) => goTo(idx, e)}
                   className={`rounded-full transition-all duration-200 focus:outline-none ${
                     idx === current
-                      ? "w-2 h-2 bg-white"
-                      : "w-1.5 h-1.5 bg-white/50 hover:bg-white/80"
+                      ? "w-2 h-2 bg-white dark:bg-slate-800"
+                      : "w-1.5 h-1.5 bg-white dark:bg-slate-800/50 hover:bg-white dark:bg-slate-800/80"
                   }`}
                   aria-label={`Ir a foto ${idx + 1}`}
                 />

@@ -56,7 +56,7 @@ def search_available_rooms(
 
     query = db.query(Room).filter(
         Room.is_active == True,
-        Room.status != RoomStatus.maintenance,
+        Room.status == RoomStatus.available,
         ~Room.id.in_(overlapping_subquery.select()),
     )
 
@@ -129,6 +129,7 @@ def create_room(
         room_number=room_in.room_number.strip(),
         room_type=room_in.room_type,
         price_per_night=room_in.price_per_night,
+        currency=room_in.currency,
         capacity=room_in.capacity,
         description=room_in.description,
         amenities=room_in.amenities,
@@ -168,6 +169,8 @@ def update_room(
         room.room_type = room_in.room_type
     if room_in.price_per_night is not None:
         room.price_per_night = room_in.price_per_night
+    if room_in.currency is not None:
+        room.currency = room_in.currency
     if room_in.capacity is not None:
         room.capacity = room_in.capacity
     if room_in.description is not None:

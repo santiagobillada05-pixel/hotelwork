@@ -40,7 +40,7 @@ def get_dashboard_summary(
 
     # Revenue calculation
     total_revenue_completed = (
-        db.query(func.coalesce(func.sum(Payment.amount), 0.0))
+        db.query(func.coalesce(func.sum(Payment.amount / Payment.exchange_rate), 0.0))
         .filter(Payment.status == PaymentStatus.completed)
         .scalar()
     )
@@ -86,7 +86,7 @@ def get_revenue_report(
 ):
     """RF09: Reporte de ingresos desglosado por método de pago."""
     breakdown = (
-        db.query(Payment.payment_method, func.sum(Payment.amount), func.count(Payment.id))
+        db.query(Payment.payment_method, func.sum(Payment.amount / Payment.exchange_rate), func.count(Payment.id))
         .filter(Payment.status == PaymentStatus.completed)
         .group_by(Payment.payment_method)
         .all()
@@ -232,9 +232,9 @@ def get_recaudacion(
     
     # Acumuladores
     totals = {
-        "week": {"amount": 0.0, "count": 0, "start": start_of_week.isoformat(), "end": end_of_week.isoformat()},
-        "month": {"amount": 0.0, "count": 0, "start": start_of_month.isoformat(), "end": end_of_month.isoformat()},
-        "year": {"amount": 0.0, "count": 0, "start": start_of_year.isoformat(), "end": end_of_year.isoformat()}
+        "week": {"amount": 0.0, "count": 0, "start": start_of_week.isoformat(), "end": end_of_week.isoformat(), "by_currency": {}},
+        "month": {"amount": 0.0, "count": 0, "start": start_of_month.isoformat(), "end": end_of_month.isoformat(), "by_currency": {}},
+        "year": {"amount": 0.0, "count": 0, "start": start_of_year.isoformat(), "end": end_of_year.isoformat(), "by_currency": {}}
     }
     
     period_payments = []
@@ -248,17 +248,24 @@ def get_recaudacion(
         in_month = start_of_month_utc <= paid_at_utc <= end_of_month_utc
         in_year = start_of_year_utc <= paid_at_utc <= end_of_year_utc
         
+        currency = getattr(p, "currency", "USD")
+        rate = getattr(p, "exchange_rate", 1.0)
+        base_amount = p.amount / rate if rate > 0 else 0
+        
         if in_week:
-            totals["week"]["amount"] += p.amount
+            totals["week"]["amount"] += base_amount
             totals["week"]["count"] += 1
+            totals["week"]["by_currency"][currency] = totals["week"]["by_currency"].get(currency, 0.0) + p.amount
             
         if in_month:
-            totals["month"]["amount"] += p.amount
+            totals["month"]["amount"] += base_amount
             totals["month"]["count"] += 1
+            totals["month"]["by_currency"][currency] = totals["month"]["by_currency"].get(currency, 0.0) + p.amount
             
         if in_year:
-            totals["year"]["amount"] += p.amount
+            totals["year"]["amount"] += base_amount
             totals["year"]["count"] += 1
+            totals["year"]["by_currency"][currency] = totals["year"]["by_currency"].get(currency, 0.0) + p.amount
             
         # Add to table list if it matches the selected period
         is_selected = (period == "week" and in_week) or (period == "month" and in_month) or (period == "year" and in_year)
@@ -275,6 +282,9 @@ def get_recaudacion(
             period_payments.append({
                 "id": p.id,
                 "amount": p.amount,
+                "currency": currency,
+                "exchange_rate": rate,
+                "base_amount": round(base_amount, 2),
                 "payment_method": p.payment_method.value if hasattr(p.payment_method, "value") else str(p.payment_method),
                 "paid_at": p.paid_at.isoformat() + "Z",
                 "guest_name": guest_name,

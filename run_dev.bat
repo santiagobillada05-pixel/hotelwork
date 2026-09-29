@@ -12,7 +12,7 @@ start "HotelWork Frontend" cmd /k "cd frontend && npm run dev"
 
 echo ===================================================
 echo  Servidores iniciados en ventanas separadas:
-echo   - Backend & Docs: http://127.0.0.1:8000/docs
+echo   - Backend y Docs: http://127.0.0.1:8000/docs
 echo   - Frontend App:   http://localhost:5173
 echo ===================================================
 pause

@@ -44,25 +44,25 @@ export default function RegisterStaffPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <Link
             to="/admin/users"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-brand-600 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-brand-600 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver a Usuarios
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
-          <div className="p-6 border-b border-slate-200">
-            <h1 className="text-xl font-black text-slate-900 flex items-center gap-2.5">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+            <h1 className="text-xl font-black text-slate-900 dark:text-slate-50 flex items-center gap-2.5">
               <UserPlus className="w-6 h-6 text-brand-600" />
               Registrar Nuevo Empleado
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
               El usuario será creado con rol <span className="inline-block px-2 py-0.5 rounded-xl text-xs font-bold border bg-amber-50 text-amber-700 border-amber-200">Staff</span> automáticamente.
             </p>
           </div>
@@ -84,46 +84,46 @@ export default function RegisterStaffPage() {
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Nombre *</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Nombre *</label>
                 <input
                   type="text"
                   name="first_name"
                   value={form.first_name}
                   onChange={handleChange}
                   required
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   placeholder="Nombre"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Apellido *</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Apellido *</label>
                 <input
                   type="text"
                   name="last_name"
                   value={form.last_name}
                   onChange={handleChange}
                   required
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   placeholder="Apellido"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Correo Electrónico *</label>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Correo Electrónico *</label>
               <input
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 placeholder="empleado@hotelwork.com"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Contraseña *</label>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Contraseña *</label>
               <input
                 type="password"
                 name="password"
@@ -131,31 +131,31 @@ export default function RegisterStaffPage() {
                 onChange={handleChange}
                 required
                 minLength={8}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 placeholder="Mínimo 8 caracteres"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Teléfono</label>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Teléfono</label>
               <input
                 type="text"
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 placeholder="+57 300 000 0000"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Documento (Cédula / Pasaporte)</label>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Documento (Cédula / Pasaporte)</label>
               <input
                 type="text"
                 name="document_id"
                 value={form.document_id}
                 onChange={handleChange}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 placeholder="CC-12345678"
               />
             </div>
@@ -164,7 +164,7 @@ export default function RegisterStaffPage() {
               <button
                 type="button"
                 onClick={() => navigate('/admin/users')}
-                className="px-4 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
               >
                 Cancelar
               </button>

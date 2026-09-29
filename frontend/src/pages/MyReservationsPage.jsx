@@ -55,10 +55,10 @@ export default function MyReservationsPage() {
       pending: { label: 'Pendiente', bg: 'bg-amber-50 text-amber-700 border-amber-200' },
       confirmed: { label: 'Confirmada', bg: 'bg-blue-50 text-blue-700 border-blue-200' },
       checked_in: { label: 'En el Hotel', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-      checked_out: { label: 'Completada', bg: 'bg-slate-100 text-slate-600 border-slate-200' },
+      checked_out: { label: 'Completada', bg: 'bg-slate-100 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700' },
       cancelled: { label: 'Cancelada', bg: 'bg-rose-50 text-rose-700 border-rose-200' },
     };
-    const s = map[status] || { label: status, bg: 'bg-slate-100 text-slate-600 border-slate-200' };
+    const s = map[status] || { label: status, bg: 'bg-slate-100 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700' };
     return (
       <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${s.bg}`}>
         {s.label}
@@ -67,14 +67,14 @@ export default function MyReservationsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2.5">
             <CalendarCheck className="w-7 h-7 text-brand-600" />
             Mis Reservas
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
             Consulta el estado de tus reservas, detalles de estancia y recibos de pago
           </p>
         </div>
@@ -89,13 +89,13 @@ export default function MyReservationsPage() {
         {loading ? (
           <div className="text-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-brand-600 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-500">Cargando tu historial...</p>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Cargando tu historial...</p>
           </div>
         ) : reservations.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-12 text-center border border-slate-200 dark:border-slate-700">
             <BedDouble className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-800">Aún no tienes reservas</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto mb-6">
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Aún no tienes reservas</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto mb-6">
               Explora nuestras habitaciones y reserva tu próxima estadía en HotelWork.
             </p>
           </div>
@@ -104,17 +104,17 @@ export default function MyReservationsPage() {
             {reservations.map((res) => (
               <div
                 key={res.id}
-                className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row justify-between md:items-center gap-4"
+                className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row justify-between md:items-center gap-4"
               >
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <span className="font-extrabold text-base text-slate-900">
+                    <span className="font-extrabold text-base text-slate-900 dark:text-slate-50">
                       Reserva #{res.id}
                     </span>
                     {getStatusBadge(res.status)}
                   </div>
 
-                  <div className="flex flex-wrap gap-4 text-xs text-slate-600 font-medium">
+                  <div className="flex flex-wrap gap-4 text-xs text-slate-600 dark:text-slate-300 font-medium">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="w-4 h-4 text-brand-600" />
                       {res.check_in_date} al {res.check_out_date}
@@ -126,23 +126,23 @@ export default function MyReservationsPage() {
                   </div>
 
                   {res.special_requests && (
-                    <p className="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg border border-slate-100 max-w-lg">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 italic bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50 max-w-lg">
                       "{res.special_requests}"
                     </p>
                   )}
                 </div>
 
-                <div className="flex flex-row md:flex-col items-center md:items-end justify-between border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 gap-3">
+                <div className="flex flex-row md:flex-col items-center md:items-end justify-between border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-700/50 gap-3">
                   <div className="text-left md:text-right">
                     <span className="text-xs text-slate-400 block font-medium">Total Facturado</span>
-                    <span className="text-xl font-black text-slate-900">${res.final_total} USD</span>
+                    <span className="text-xl font-black text-slate-900 dark:text-slate-50">${res.final_total} USD</span>
                     <span className="text-xs text-slate-400 block">IVA 19% incl.</span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setSelectedReceipt(res)}
-                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5"
                     >
                       <Receipt className="w-3.5 h-3.5 text-brand-600" />
                       Ver Factura

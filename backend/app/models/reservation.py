@@ -49,8 +49,13 @@ class Reservation(Base):
     @property
     def is_paid(self) -> bool:
         from app.models.payment import PaymentStatus
-        total_paid = sum(p.amount for p in self.payments if p.status == PaymentStatus.completed)
-        return total_paid >= self.final_total
+        total_paid = 0.0
+        for p in self.payments:
+            if p.status == PaymentStatus.completed:
+                rate = getattr(p, "exchange_rate", 1.0)
+                total_paid += (p.amount / rate)
+        # Allow small floating point margin
+        return total_paid >= (self.final_total - 0.01)
 
     def __repr__(self) -> str:
         return f"<Reservation(id={self.id}, user={self.user_id}, room={self.room_id}, status='{self.status}')>"

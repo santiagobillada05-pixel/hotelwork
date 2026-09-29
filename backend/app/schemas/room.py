@@ -1,4 +1,4 @@
-﻿"""Esquemas Pydantic para habitaciones."""
+"""Esquemas Pydantic para habitaciones."""
 
 import json
 import re
@@ -24,7 +24,7 @@ class RoomStatus(str, Enum):
     cleaning = "cleaning"
 
 
-_URL_PATTERN = re.compile(r'^https?://', re.IGNORECASE)
+_URL_PATTERN = re.compile(r'^(https?://|data:image/)', re.IGNORECASE)
 
 def _validate_image_urls(urls: list) -> list:
     """Validates a list of image URLs. Returns cleaned list or raises ValueError."""
@@ -38,9 +38,9 @@ def _validate_image_urls(urls: list) -> list:
         if not url:
             raise ValueError("Las URLs de imagen no pueden estar vacias.")
         if not _URL_PATTERN.match(url):
-            raise ValueError(f"URL invalida (debe iniciar con http:// o https://): {url}")
+            raise ValueError(f"URL invalida (debe iniciar con http://, https:// o data:image/): {url[:50]}...")
         if url in seen:
-            raise ValueError(f"URL duplicada: {url}")
+            raise ValueError(f"URL duplicada: {url[:50]}...")
         seen.add(url)
     return [u.strip() for u in urls]
 
@@ -51,7 +51,8 @@ class RoomCreate(BaseModel):
     """Esquema para crear una habitacion."""
     room_number: str = Field(..., min_length=1, max_length=10, description="Numero de habitacion, ej: 101")
     room_type: RoomType
-    price_per_night: float = Field(..., gt=0, description="Tarifa por noche en USD")
+    price_per_night: float = Field(..., gt=0, description="Tarifa por noche")
+    currency: str = Field(default="USD", max_length=3, description="Moneda (USD, EUR, COP)")
     capacity: int = Field(..., ge=1, le=10, description="Capacidad maxima de huespedes")
     description: Optional[str] = Field(None, max_length=1000)
     amenities: Optional[str] = Field(None, description="JSON string de amenidades")
@@ -77,6 +78,7 @@ class RoomUpdate(BaseModel):
     room_number: Optional[str] = Field(None, min_length=1, max_length=10)
     room_type: Optional[RoomType] = None
     price_per_night: Optional[float] = Field(None, gt=0)
+    currency: Optional[str] = Field(None, max_length=3)
     capacity: Optional[int] = Field(None, ge=1, le=10)
     description: Optional[str] = Field(None, max_length=1000)
     amenities: Optional[str] = None
@@ -118,6 +120,7 @@ class RoomResponse(BaseModel):
     room_number: str
     room_type: RoomType
     price_per_night: float
+    currency: str = "USD"
     capacity: int
     description: Optional[str] = None
     amenities: Optional[str] = None
@@ -126,6 +129,8 @@ class RoomResponse(BaseModel):
     image_url: Optional[str] = None        # Legacy compat: always = image_urls[0]
     image_urls: List[str] = Field(default_factory=list)  # Full ordered gallery
     is_active: bool
+    is_room_bookable: bool = True
+    guest_status_label: str = "Disponible"
     created_at: datetime
     updated_at: datetime
 
@@ -139,4 +144,12 @@ class RoomResponse(BaseModel):
             self.image_urls = [self.image_url]
         if self.image_urls and not self.image_url:
             self.image_url = self.image_urls[0]
+            
+        if self.status != RoomStatus.available:
+            self.is_room_bookable = False
+            self.guest_status_label = "Fuera de servicio"
+        else:
+            self.is_room_bookable = True
+            self.guest_status_label = "Disponible"
+            
         return self

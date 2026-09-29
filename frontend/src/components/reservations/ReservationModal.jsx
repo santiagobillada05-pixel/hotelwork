@@ -29,9 +29,16 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
   const [checkOutDate, setCheckOutDate] = useState(defaultCheckOut);
   const [numGuests, setNumGuests] = useState(1);
   const [specialRequests, setSpecialRequests] = useState('');
+  const [currency, setCurrency] = useState('USD');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successData, setSuccessData] = useState(null);
+
+  const exchangeRates = {
+    USD: { rate: 1, symbol: '$' },
+    EUR: { rate: 0.92, symbol: '€' },
+    COP: { rate: 4000, symbol: '$' }
+  };
 
   // Live tariff calculation
   const calculations = useMemo(() => {
@@ -43,17 +50,28 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
 
     if (nights <= 0) return null;
 
-    const baseTotal = nights * room.price_per_night;
+    const roomCurr = room.currency || 'USD';
+    const rateToTarget = exchangeRates[currency].rate / exchangeRates[roomCurr].rate;
+    
+    const baseTotal = nights * room.price_per_night * rateToTarget;
     const taxAmount = baseTotal * 0.19; // 19% IVA
     const finalTotal = baseTotal + taxAmount;
+    
+    const formatAmt = (amt) => new Intl.NumberFormat(currency === 'COP' ? 'es-CO' : 'en-US', {
+      minimumFractionDigits: currency === 'COP' ? 0 : 2,
+      maximumFractionDigits: currency === 'COP' ? 0 : 2
+    }).format(amt);
 
     return {
       nights,
-      baseTotal: baseTotal.toFixed(2),
-      taxAmount: taxAmount.toFixed(2),
-      finalTotal: finalTotal.toFixed(2),
+      baseTotal: formatAmt(baseTotal),
+      taxAmount: formatAmt(taxAmount),
+      finalTotal: formatAmt(finalTotal),
+      symbol: exchangeRates[currency].symbol,
+      currency,
+      rawFinalTotal: finalTotal
     };
-  }, [checkInDate, checkOutDate, room.price_per_night]);
+  }, [checkInDate, checkOutDate, room.price_per_night, room.currency, currency]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,18 +109,18 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-700/50 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50/50">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Confirmar Reserva</h3>
-            <p className="text-xs text-slate-500 font-medium">
-              Habitación {room.room_number} • ${room.price_per_night} USD / noche
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50">Confirmar Reserva</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              Habitación {room.room_number} • ${room.price_per_night} {room.currency || 'USD'} / noche
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -115,21 +133,21 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
               <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
-              <h4 className="text-xl font-bold text-slate-900 mb-2">¡Reserva Confirmada!</h4>
-              <p className="text-slate-600 text-sm mb-6 leading-relaxed">
-                Tu reserva con código <span className="font-bold text-slate-900">#{successData.id}</span> ha sido registrada exitosamente. Hemos enviado los detalles a tu cuenta.
+              <h4 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-2">¡Reserva Confirmada!</h4>
+              <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
+                Tu reserva con código <span className="font-bold text-slate-900 dark:text-slate-50">#{successData.id}</span> ha sido registrada exitosamente. Hemos enviado los detalles a tu cuenta.
               </p>
 
-              <div className="bg-slate-50 rounded-2xl p-4 text-left border border-slate-200 mb-6 text-xs space-y-2">
-                <div className="flex justify-between text-slate-600">
+              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 text-left border border-slate-200 dark:border-slate-700 mb-6 text-xs space-y-2">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Fechas:</span>
-                  <span className="font-semibold text-slate-800">{successData.check_in_date} al {successData.check_out_date}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-100">{successData.check_in_date} al {successData.check_out_date}</span>
                 </div>
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Total a pagar:</span>
-                  <span className="font-bold text-slate-900 text-sm">${successData.final_total} USD</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-50 text-sm">${successData.final_total} USD</span>
                 </div>
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Estado:</span>
                   <span className="font-semibold text-emerald-600 uppercase">{successData.status}</span>
                 </div>
@@ -144,7 +162,7 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                 </button>
                 <button
                   onClick={onClose}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold py-2.5 rounded-xl transition-colors text-sm"
                 >
                   Cerrar
                 </button>
@@ -162,7 +180,7 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
               {/* Date Inputs */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
                     Fecha de Entrada
                   </label>
                   <div className="relative">
@@ -172,13 +190,13 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                       value={checkInDate}
                       onChange={(e) => setCheckInDate(e.target.value)}
                       required
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
                     Fecha de Salida
                   </label>
                   <div className="relative">
@@ -188,36 +206,53 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                       value={checkOutDate}
                       onChange={(e) => setCheckOutDate(e.target.value)}
                       required
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Guests Selector */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Número de Huéspedes (Máx: {room.capacity})
-                </label>
-                <div className="relative">
-                  <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              {/* Guests and Currency Selector */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
+                    Número de Huéspedes
+                  </label>
+                  <div className="relative">
+                    <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <select
+                      value={numGuests}
+                      onChange={(e) => setNumGuests(e.target.value)}
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                    >
+                      {Array.from({ length: room.capacity }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>
+                          {n} {n === 1 ? 'huésped' : 'huéspedes'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
+                    Moneda de Pago
+                  </label>
                   <select
-                    value={numGuests}
-                    onChange={(e) => setNumGuests(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
                   >
-                    {Array.from({ length: room.capacity }, (_, i) => i + 1).map((n) => (
-                      <option key={n} value={n}>
-                        {n} {n === 1 ? 'huésped' : 'huéspedes'}
-                      </option>
-                    ))}
+                    <option value="USD">USD (Dólar)</option>
+                    <option value="EUR">EUR (Euro)</option>
+                    <option value="COP">COP (Peso Col.)</option>
                   </select>
                 </div>
               </div>
 
               {/* Special Requests */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
                   Peticiones Especiales (Opcional)
                 </label>
                 <textarea
@@ -225,30 +260,30 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                   value={specialRequests}
                   onChange={(e) => setSpecialRequests(e.target.value)}
                   placeholder="Ej: Llegada tardía, piso alto, cuna para bebé..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium placeholder:text-slate-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium placeholder:text-slate-400"
                 />
               </div>
 
               {/* Price Breakdown / RF06 Auto Tariff Calculation */}
               {calculations ? (
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1">
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">
                     <Receipt className="w-3.5 h-3.5 text-brand-600" />
                     Desglose de Tarifas (RF06)
                   </div>
-                  <div className="flex justify-between text-xs text-slate-600">
+                  <div className="flex justify-between text-xs text-slate-600 dark:text-slate-300">
                     <span>
-                      {calculations.nights} noche(s) × ${room.price_per_night} USD
+                      {calculations.nights} noche(s) × {calculations.symbol}{new Intl.NumberFormat(currency === 'COP' ? 'es-CO' : 'en-US', { minimumFractionDigits: currency === 'COP' ? 0 : 2, maximumFractionDigits: currency === 'COP' ? 0 : 2 }).format(room.price_per_night * (exchangeRates[currency].rate / exchangeRates[room.currency || 'USD'].rate))} {calculations.currency}
                     </span>
-                    <span className="font-semibold text-slate-800">${calculations.baseTotal} USD</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-100">{calculations.symbol}{calculations.baseTotal} {calculations.currency}</span>
                   </div>
-                  <div className="flex justify-between text-xs text-slate-600">
+                  <div className="flex justify-between text-xs text-slate-600 dark:text-slate-300">
                     <span>Impuestos (IVA 19%)</span>
-                    <span className="font-semibold text-slate-800">${calculations.taxAmount} USD</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-100">{calculations.symbol}{calculations.taxAmount} {calculations.currency}</span>
                   </div>
-                  <div className="border-t border-slate-200 pt-2 flex justify-between items-center text-sm font-extrabold text-slate-900">
+                  <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between items-center text-sm font-extrabold text-slate-900 dark:text-slate-50">
                     <span>Total a Pagar</span>
-                    <span className="text-base text-brand-700">${calculations.finalTotal} USD</span>
+                    <span className="text-base text-brand-700">{calculations.symbol}{calculations.finalTotal} {calculations.currency}</span>
                   </div>
                 </div>
               ) : (

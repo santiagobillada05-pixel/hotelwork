@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { roomsApi } from "../../api/roomsApi";
 import ImageGalleryEditor from "../../components/rooms/ImageGalleryEditor";
 import { 
@@ -26,6 +26,7 @@ export default function ManageRoomsPage() {
     room_number: "",
     room_type: "single",
     price_per_night: "",
+    currency: "USD",
     capacity: 1,
     description: "",
     amenities: '["WiFi", "Aire acondicionado", "Smart TV"]',
@@ -71,6 +72,7 @@ export default function ManageRoomsPage() {
       room_number: room.room_number,
       room_type: room.room_type,
       price_per_night: room.price_per_night.toString(),
+      currency: room.currency || "USD",
       capacity: room.capacity,
       description: room.description || "",
       amenities: room.amenities || "[]",
@@ -139,15 +141,15 @@ export default function ManageRoomsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2.5">
               <BedDouble className="w-7 h-7 text-brand-600" />
               Gestion de Habitaciones (RF04)
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
               Crea, edita, cambia el estado operativo y administra el inventario de habitaciones
             </p>
           </div>
@@ -155,7 +157,7 @@ export default function ManageRoomsPage() {
           <div className="flex gap-2.5">
             <button
               onClick={fetchRooms}
-              className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 shadow-sm transition-all"
+              className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900/50 rounded-xl text-slate-700 dark:text-slate-200 shadow-sm transition-all"
               title="Actualizar"
             >
               <RefreshCw className="w-4 h-4" />
@@ -180,14 +182,14 @@ export default function ManageRoomsPage() {
         {loading ? (
           <div className="text-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-brand-600 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-500">Cargando inventario de habitaciones...</p>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Cargando inventario de habitaciones...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <th className="py-4 px-6">Numero / Foto</th>
                     <th className="py-4 px-6">Tipo</th>
                     <th className="py-4 px-6">Capacidad</th>
@@ -198,18 +200,18 @@ export default function ManageRoomsPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
                   {rooms.map((room) => (
-                    <tr key={room.id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={room.id} className="hover:bg-slate-50 dark:bg-slate-900/50/70 transition-colors">
                       <td className="py-4 px-6 flex items-center gap-3">
                         <img
                           src={coverImage(room)}
                           alt={room.room_number}
-                          className="w-12 h-12 rounded-xl object-cover border border-slate-200"
+                          className="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-slate-700"
                           onError={(e) => {
                             e.target.src = "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=150&q=80";
                           }}
                         />
                         <div>
-                          <span className="font-extrabold text-slate-900 block">
+                          <span className="font-extrabold text-slate-900 dark:text-slate-50 block">
                             Habitacion {room.room_number}
                           </span>
                           <span className="text-xs text-slate-400">Piso {room.floor || 1}</span>
@@ -221,16 +223,16 @@ export default function ManageRoomsPage() {
                         </div>
                       </td>
 
-                      <td className="py-4 px-6 font-semibold text-slate-800 capitalize">
+                      <td className="py-4 px-6 font-semibold text-slate-800 dark:text-slate-100 capitalize">
                         {room.room_type}
                       </td>
 
-                      <td className="py-4 px-6 text-slate-600">
+                      <td className="py-4 px-6 text-slate-600 dark:text-slate-300">
                         {room.capacity} persona(s)
                       </td>
 
-                      <td className="py-4 px-6 font-extrabold text-slate-900">
-                        ${room.price_per_night} USD
+                      <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-slate-50">
+                        ${room.price_per_night} {room.currency || "USD"}
                       </td>
 
                       <td className="py-4 px-6">
@@ -252,12 +254,17 @@ export default function ManageRoomsPage() {
                           <option value="cleaning">Limpieza</option>
                           <option value="maintenance">Mantenimiento</option>
                         </select>
+                        {!room.is_room_bookable && (
+                          <span className="block mt-1.5 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded w-fit">
+                            Fuera de servicio para huéspedes
+                          </span>
+                        )}
                       </td>
 
                       <td className="py-4 px-6 text-right space-x-2">
                         <button
                           onClick={() => handleOpenEdit(room)}
-                          className="p-1.5 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                           title="Editar"
                         >
                           <Edit className="w-4 h-4" />
@@ -281,14 +288,14 @@ export default function ManageRoomsPage() {
         {/* Create / Edit Modal */}
         {modalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-700/50 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-50">
                   {editingRoom ? "Editar Habitacion " + editingRoom.room_number : "Nueva Habitacion"}
                 </h3>
                 <button
                   onClick={() => setModalOpen(false)}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-full"
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-300 rounded-full"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -297,7 +304,7 @@ export default function ManageRoomsPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                       Numero
                     </label>
                     <input
@@ -306,18 +313,18 @@ export default function ManageRoomsPage() {
                       value={formData.room_number}
                       onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
                       placeholder="101"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                       Tipo
                     </label>
                     <select
                       value={formData.room_type}
                       onChange={(e) => setFormData({ ...formData, room_type: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     >
                       <option value="single">Individual</option>
                       <option value="double">Doble</option>
@@ -329,22 +336,33 @@ export default function ManageRoomsPage() {
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      Tarifa (USD)
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
+                      Tarifa
                     </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      required
-                      value={formData.price_per_night}
-                      onChange={(e) => setFormData({ ...formData, price_per_night: e.target.value })}
-                      placeholder="85.00"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        step="0.01"
+                        required
+                        value={formData.price_per_night}
+                        onChange={(e) => setFormData({ ...formData, price_per_night: e.target.value })}
+                        placeholder="85.00"
+                        className="w-2/3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      />
+                      <select
+                        value={formData.currency}
+                        onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                        className="w-1/3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      >
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="COP">COP</option>
+                      </select>
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                       Capacidad
                     </label>
                     <input
@@ -354,12 +372,12 @@ export default function ManageRoomsPage() {
                       required
                       value={formData.capacity}
                       onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                       Piso
                     </label>
                     <input
@@ -367,14 +385,14 @@ export default function ManageRoomsPage() {
                       value={formData.floor}
                       onChange={(e) => setFormData({ ...formData, floor: e.target.value })}
                       placeholder="1"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 {/* Gallery Editor - replaces single image_url input */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                     Fotos de la Habitacion
                   </label>
                   <ImageGalleryEditor
@@ -385,7 +403,7 @@ export default function ManageRoomsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                     Descripcion
                   </label>
                   <textarea
@@ -393,19 +411,19 @@ export default function ManageRoomsPage() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Habitacion con cama king, minibar y balcon..."
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
                     Amenidades (JSON array)
                   </label>
                   <input
                     type="text"
                     value={formData.amenities}
                     onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none text-xs"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none text-xs"
                   />
                 </div>
 
@@ -420,7 +438,7 @@ export default function ManageRoomsPage() {
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all"
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-all"
                   >
                     Cancelar
                   </button>
