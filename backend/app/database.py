@@ -1,4 +1,4 @@
-﻿"""Database configuration and connection management."""
+"""Database configuration and connection management."""
 
 import json
 from sqlalchemy import create_engine, text
@@ -23,6 +23,27 @@ def init_db() -> None:
     import app.models  # noqa: F401
     Base.metadata.create_all(bind=engine)
     _migrate_image_urls()
+    _seed_default_admin()
+
+def _seed_default_admin() -> None:
+    """Seeds a default admin user if no admin exists in the database."""
+    from app.models.user import User, UserRole
+    from app.services.auth_service import hash_password
+    
+    with SessionLocal() as db:
+        admin_exists = db.query(User).filter(User.role == UserRole.admin).first()
+        if not admin_exists:
+            default_admin = User(
+                email="admin@hotelwork.com",
+                hashed_password=hash_password("admin123"),
+                first_name="Admin",
+                last_name="Principal",
+                role=UserRole.admin,
+                is_active=True
+            )
+            db.add(default_admin)
+            db.commit()
+            print("[init_db] Default admin user created.")
 
 
 def _migrate_image_urls() -> None:
