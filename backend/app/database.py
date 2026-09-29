@@ -20,6 +20,28 @@ class Base(DeclarativeBase):
 
 def init_db() -> None:
     """Initializes the database by creating all tables."""
+    import os
+    import shutil
+    
+    # Si estamos en Railway (existe /app/data)
+    volume_db = "/app/data/hotelwork.db"
+    seed_db = "/app/hotelwork.db"
+    
+    if os.path.exists("/app/data") and os.path.exists(seed_db):
+        # Sobrescribir si no existe, o si existe pero pesa menos de 100KB (base de datos vacía)
+        needs_copy = False
+        if not os.path.exists(volume_db):
+            needs_copy = True
+        elif os.path.getsize(volume_db) < 100000:
+            needs_copy = True
+            
+        if needs_copy:
+            try:
+                shutil.copy2(seed_db, volume_db)
+                print("[init_db] Base de datos local restaurada en el volumen de Railway con éxito.")
+            except Exception as e:
+                print(f"[init_db] Error copiando la base de datos: {e}")
+
     import app.models  # noqa: F401
     Base.metadata.create_all(bind=engine)
     _migrate_image_urls()
