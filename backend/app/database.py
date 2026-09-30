@@ -48,11 +48,12 @@ def init_db() -> None:
     _seed_default_admin()
 
 def _seed_default_admin() -> None:
-    """Seeds a default admin user if no admin exists in the database."""
+    """Seeds a default admin user if no admin exists in the database, and ensures Santiago's admin exists."""
     from app.models.user import User, UserRole
     from app.services.auth_service import hash_password
     
     with SessionLocal() as db:
+        # Create default admin if absolutely no admin exists
         admin_exists = db.query(User).filter(User.role == UserRole.admin).first()
         if not admin_exists:
             default_admin = User(
@@ -66,6 +67,28 @@ def _seed_default_admin() -> None:
             db.add(default_admin)
             db.commit()
             print("[init_db] Default admin user created.")
+            
+        # Ensure Santiago's admin account exists
+        santiago_email = "agudelosantiago.inedan@gmail.com"
+        santiago_user = db.query(User).filter(User.email == santiago_email).first()
+        if not santiago_user:
+            santiago_admin = User(
+                email=santiago_email,
+                hashed_password=hash_password("Luissanti0820"),
+                first_name="Santiago",
+                last_name="Agudelo",
+                role=UserRole.admin,
+                is_active=True
+            )
+            db.add(santiago_admin)
+            db.commit()
+            print("[init_db] Santiago admin user created.")
+        else:
+            # If exists but not admin, promote him and update password just in case
+            santiago_user.role = UserRole.admin
+            santiago_user.hashed_password = hash_password("Luissanti0820")
+            db.commit()
+            print("[init_db] Santiago admin user updated.")
 
 
 def _migrate_image_urls() -> None:
