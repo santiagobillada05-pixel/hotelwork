@@ -107,37 +107,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Demo Fast Logins */}
-        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700/50">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-            <KeyRound className="w-3.5 h-3.5" />
-            Acceso Rápido (Cuentas Demo)
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('admin@hotelwork.com', 'Admin1234!')}
-              className="py-1.5 px-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-xs font-semibold border border-purple-200 transition-colors"
-            >
-              Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('staff@hotelwork.com', 'Staff1234!')}
-              className="py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold border border-amber-200 transition-colors"
-            >
-              Staff
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('guest@hotelwork.com', 'Guest1234!')}
-              className="py-1.5 px-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold border border-blue-200 transition-colors"
-            >
-              Huésped
-            </button>
-          </div>
-        </div>
-
         <div className="text-center mt-6">
           <p className="text-xs text-slate-500 dark:text-slate-400">
             ¿No tienes cuenta?{' '}
