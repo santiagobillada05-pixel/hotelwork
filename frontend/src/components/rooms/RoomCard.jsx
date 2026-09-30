@@ -38,68 +38,70 @@ export default function RoomCard({ room, onSelect }) {
   const goToDetail = () => navigate("/rooms/" + room.id);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+    <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700/50 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 flex flex-col group">
       {/* Image / Carousel container -- clicking navigates to detail */}
       <div
-        className="relative h-56 overflow-hidden cursor-pointer"
+        className="relative h-64 overflow-hidden cursor-pointer"
         onClick={goToDetail}
       >
-        <RoomCarousel images={images} roomNumber={room.room_number} className="h-56" />
+        <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">
+          <RoomCarousel images={images} roomNumber={room.room_number} className="h-64" />
+        </div>
 
         {/* Overlaid badges - pointer-events-none so clicks pass through to carousel controls */}
-        <div className="absolute top-3 left-3 flex gap-2 pointer-events-none z-20">
-          <span className="bg-brand-600 text-white font-bold text-xs px-3 py-1 rounded-full shadow">
+        <div className="absolute top-4 left-4 flex gap-2 pointer-events-none z-20">
+          <span className="bg-brand-600/90 backdrop-blur-md text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg border border-brand-500/30">
             Hab. {room.room_number}
           </span>
-          <span className="bg-white dark:bg-slate-800/90 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-xs px-2.5 py-1 rounded-full shadow-sm">
+          <span className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-slate-900 dark:text-white font-semibold text-xs px-3 py-1.5 rounded-full shadow-lg border border-white/20">
             {getRoomTypeLabel(room.room_type)}
           </span>
         </div>
 
         {room.floor && (
-          <div className="absolute top-3 right-3 bg-slate-900/70 text-white text-xs px-2 py-0.5 rounded-md backdrop-blur-sm pointer-events-none z-20">
+          <div className="absolute top-4 right-4 bg-black/40 text-white font-medium text-xs px-2.5 py-1 rounded-full backdrop-blur-md pointer-events-none z-20 border border-white/10">
             Piso {room.floor}
           </div>
         )}
 
         {/* Badge Fuera de Servicio */}
         {!room.is_room_bookable && (
-          <div className="absolute inset-x-0 bottom-0 bg-rose-600/90 backdrop-blur-sm text-white text-center py-2 text-xs font-bold pointer-events-none z-20">
-            Fuera de servicio
+          <div className="absolute inset-x-0 bottom-0 bg-rose-600/90 backdrop-blur-md text-white text-center py-2.5 text-xs font-bold pointer-events-none z-20">
+            Mantenimiento
           </div>
         )}
       </div>
 
       {/* Content -- clicking title/description navigates to detail */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      <div className="p-6 flex-1 flex flex-col justify-between">
         <div className="cursor-pointer" onClick={goToDetail}>
-          <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 mb-3">
-            <span className="flex items-center gap-1 font-medium">
-              <Users className="w-4 h-4 text-brand-600" /> Hasta {room.capacity} huesped(es)
+          <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 mb-4">
+            <span className="flex items-center gap-1.5 font-medium">
+              <Users className="w-4 h-4 text-brand-600" /> Hasta {room.capacity} huespedes
             </span>
-            <span className="flex items-center gap-1 font-medium">
-              <BedDouble className="w-4 h-4 text-brand-600" /> Cama premium
+            <span className="flex items-center gap-1.5 font-medium">
+              <BedDouble className="w-4 h-4 text-brand-600" /> Descanso Premium
             </span>
           </div>
 
-          <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-2 mb-4 leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-2 mb-5 leading-relaxed font-light">
             {room.description ||
-              "Habitacion confortable con todas las comodidades para una estancia placentera."}
+              "Espacio cuidadosamente diseñado para su descanso, equipado con detalles de primera categoría para una experiencia inolvidable."}
           </p>
 
           {amenitiesList.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-4">
+            <div className="flex flex-wrap gap-2 mb-5">
               {amenitiesList.slice(0, 3).map((item, idx) => (
                 <span
                   key={idx}
-                  className="bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 text-xs px-2.5 py-1 rounded-lg border border-slate-100 dark:border-slate-700/50 flex items-center gap-1"
+                  className="bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 text-xs px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
-                  <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-brand-500" />
                   {item}
                 </span>
               ))}
               {amenitiesList.length > 3 && (
-                <span className="text-xs text-slate-400 self-center pl-1 font-medium">
+                <span className="text-xs text-slate-400 self-center pl-1 font-medium hover:text-brand-600 transition-colors">
                   +{amenitiesList.length - 3} mas
                 </span>
               )}
@@ -107,11 +109,11 @@ export default function RoomCard({ room, onSelect }) {
           )}
         </div>
 
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between mt-auto">
+        <div className="pt-5 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between mt-auto">
           <div className="cursor-pointer" onClick={goToDetail}>
-            <span className="text-xs text-slate-400 block font-medium">Tarifa por noche</span>
-            <span className="text-2xl font-extrabold text-slate-900 dark:text-slate-50">${room.price_per_night}</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium"> USD</span>
+            <span className="text-xs text-slate-400 block font-medium uppercase tracking-wider mb-0.5">Tarifa por noche</span>
+            <span className="text-3xl font-serif font-bold text-slate-900 dark:text-white">${room.price_per_night}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium ml-1">USD</span>
           </div>
 
           {room.is_room_bookable ? (
