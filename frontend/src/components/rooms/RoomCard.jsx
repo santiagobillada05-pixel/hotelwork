@@ -112,7 +112,7 @@ export default function RoomCard({ room, onSelect }) {
         <div className="pt-5 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between mt-auto">
           <div className="cursor-pointer" onClick={goToDetail}>
             <span className="text-xs text-slate-400 block font-medium uppercase tracking-wider mb-0.5">Tarifa por noche</span>
-            <span className="text-3xl font-serif font-bold text-slate-900 dark:text-white">${room.price_per_night}</span>
+            <span className="text-3xl font-extrabold text-slate-900 dark:text-white">${room.price_per_night}</span>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium ml-1">USD</span>
           </div>
 

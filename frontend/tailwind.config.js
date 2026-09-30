@@ -7,10 +7,6 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Montserrat', 'sans-serif'],
-        serif: ['Merriweather', 'serif'],
-      },
       colors: {
         brand: {
           50: '#f0f9ff',
