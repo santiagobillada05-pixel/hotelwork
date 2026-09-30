@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['Montserrat', 'sans-serif'],
+        serif: ['Merriweather', 'serif'],
       },
       colors: {
         brand: {
