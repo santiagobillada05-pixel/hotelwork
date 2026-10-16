@@ -41,8 +41,8 @@ def create_reservation(
     if not room:
         raise NotFoundException("La habitación solicitada no existe o no está disponible")
         
-    if room.status != RoomStatus.available:
-        raise ConflictException("HABITACION_FUERA_DE_SERVICIO")
+    if room.status == RoomStatus.maintenance:
+        raise ConflictException("La habitación se encuentra en mantenimiento y no está disponible para reservas")
 
     if res_in.num_guests > room.capacity:
         raise BadRequestException(f"La habitación seleccionada tiene capacidad máxima para {room.capacity} persona(s)")

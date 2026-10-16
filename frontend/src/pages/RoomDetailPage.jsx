@@ -98,7 +98,7 @@ export default function RoomDetailPage() {
     setError(null);
     try {
       await reservationsApi.createReservation({
-        room_id: room.id,
+        room_id: Number(room.id),
         check_in_date: checkIn,
         check_out_date: checkOut,
         num_guests: Number(numGuests),
@@ -107,6 +107,10 @@ export default function RoomDetailPage() {
       });
       setBookingSuccess(true);
     } catch (err) {
+      if (err.statusCode === 401) {
+        navigate('/login', { state: { from: `/rooms/${id}` } });
+        return;
+      }
       setError(err.message || "Error al procesar reserva");
     } finally {
       setBookingLoading(false);

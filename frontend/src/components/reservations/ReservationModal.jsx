@@ -83,7 +83,7 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
 
     try {
       const response = await reservationsApi.createReservation({
-        room_id: room.id,
+        room_id: Number(room.id),
         check_in_date: checkInDate,
         check_out_date: checkOutDate,
         num_guests: Number(numGuests),
@@ -94,6 +94,10 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
       setSuccessData(response.data);
       if (onSuccess) onSuccess();
     } catch (err) {
+      if (err.statusCode === 401) {
+        navigate('/login', { state: { from: window.location.pathname } });
+        return;
+      }
       setError(err.message || 'Error al procesar la reserva');
     } finally {
       setLoading(false);

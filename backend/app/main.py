@@ -42,10 +42,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
+    allow_origin_regex=r".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,6 +64,22 @@ async def hotelwork_exception_handler(request: Request, exc: HotelWorkException)
     )
 
 
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Formats standard HTTPExceptions (like 401 Not Authenticated, 404, etc.) in standard shape."""
+    detail_msg = exc.detail if isinstance(exc.detail, str) else "Error en la solicitud"
+    if exc.status_code == 401:
+        detail_msg = "Tu sesión ha expirado o no has iniciado sesión. Por favor inicia sesión nuevamente."
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=error_response(
+            message=detail_msg,
+            detail=str(exc.detail),
+            error_code=f"HTTP_{exc.status_code}",
+        ),
+    )
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Formats Pydantic validation errors in the standardized response shape."""
@@ -71,9 +90,24 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=error_response(
-            message="Error de validación en los datos enviados",
+            message="Error de validación en los datos de la reserva",
             detail=detail_msg,
             error_code="VALIDATION_ERROR",
+        ),
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Captures unhandled exceptions and returns standardized error response."""
+    import traceback
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content=error_response(
+            message=f"Error en el servidor: {str(exc)}",
+            detail=str(exc),
+            error_code="INTERNAL_SERVER_ERROR",
         ),
     )
 
