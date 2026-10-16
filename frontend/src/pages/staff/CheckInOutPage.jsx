@@ -26,16 +26,18 @@ export default function CheckInOutPage() {
 
   // Payment modal state
   const [paymentAmount, setPaymentAmount] = useState('');
-  const [paymentCurrency, setPaymentCurrency] = useState('USD');
+  const [paymentCurrency, setPaymentCurrency] = useState('COP');
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [paymentRef, setPaymentRef] = useState('');
   const [paymentSubmitting, setPaymentSubmitting] = useState(false);
 
   const currencies = {
-    USD: { rate: 1, symbol: '$' },
-    COP: { rate: 4000, symbol: '$' },
-    EUR: { rate: 0.92, symbol: '€' }
+    COP: { symbol: '$', name: 'COP (Peso Colombiano)' },
+    USD: { symbol: '$', name: 'USD (Dólar)' },
+    EUR: { symbol: '€', name: 'EUR (Euro)' }
   };
+
+  const isLegacyUSD = (amount) => Number(amount) > 0 && Number(amount) < 2000;
 
   const fetchReservations = async () => {
     setLoading(true);
@@ -87,19 +89,25 @@ export default function CheckInOutPage() {
     }
     setPaymentModalData(res);
     setPaymentModalPaymentId(paymentId);
-    setPaymentCurrency('USD');
-    setPaymentAmount(res.final_total.toString());
+    setPaymentCurrency('COP');
+    const baseCop = isLegacyUSD(res.final_total) ? res.final_total * 4000 : res.final_total;
+    setPaymentAmount(new Intl.NumberFormat('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(baseCop));
     setPaymentRef(`TXN-${Date.now().toString().slice(-6)}`);
   };
 
   const handleCurrencyChange = (newCurrency) => {
     if (!paymentModalData) return;
-    const rate = currencies[newCurrency].rate;
-    let newAmount = paymentModalData.final_total * rate;
+    const baseCop = isLegacyUSD(paymentModalData.final_total) ? paymentModalData.final_total * 4000 : paymentModalData.final_total;
     
+    let newAmount;
     if (newCurrency === 'COP') {
+      newAmount = baseCop;
       setPaymentAmount(new Intl.NumberFormat('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(newAmount));
-    } else {
+    } else if (newCurrency === 'USD') {
+      newAmount = baseCop / 4000;
+      setPaymentAmount(newAmount.toFixed(2));
+    } else if (newCurrency === 'EUR') {
+      newAmount = (baseCop / 4000) * 0.92;
       setPaymentAmount(newAmount.toFixed(2));
     }
     setPaymentCurrency(newCurrency);
@@ -133,10 +141,11 @@ export default function CheckInOutPage() {
         }
       }
       
+      const rate = paymentCurrency === 'COP' ? 1.0 : paymentCurrency === 'USD' ? 4000.0 : 4350.0;
       await paymentsApi.confirmPayment(paymentModalPaymentId, {
         amount: parsedAmount,
         currency: paymentCurrency,
-        exchange_rate: currencies[paymentCurrency].rate,
+        exchange_rate: rate,
         payment_method: paymentMethod,
         transaction_ref: paymentRef,
       });
@@ -243,7 +252,7 @@ export default function CheckInOutPage() {
 
                           <td className="py-4 px-6">
                             <span className="font-black text-slate-900 dark:text-slate-50">
-                              ${res.final_total} USD
+                              ${isLegacyUSD(res.final_total) ? (res.final_total * 4000).toLocaleString('es-CO') : Number(res.final_total).toLocaleString('es-CO')} COP
                             </span>
                             {res.is_paid && (
                               <span className="block text-[10px] font-bold text-emerald-600 uppercase">
@@ -345,21 +354,24 @@ export default function CheckInOutPage() {
               </div>
 
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Reserva #{paymentModalData.id} • Monto base: ${paymentModalData.final_total} USD
+                Reserva #{paymentModalData.id} • Valor base:{' '}
+                <span className="font-bold text-slate-800 dark:text-slate-200">
+                  ${isLegacyUSD(paymentModalData.final_total) ? (paymentModalData.final_total * 4000).toLocaleString('es-CO') : Number(paymentModalData.final_total).toLocaleString('es-CO')} COP
+                </span>
               </p>
 
               <form onSubmit={handlePaymentSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
-                    Moneda
+                    Moneda de Pago
                   </label>
                   <select
                     value={paymentCurrency}
                     onChange={(e) => handleCurrencyChange(e.target.value)}
                     className="w-full mb-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   >
-                    {Object.keys(currencies).map((curr) => (
-                      <option key={curr} value={curr}>{curr}</option>
+                    {Object.entries(currencies).map(([code, info]) => (
+                      <option key={code} value={code}>{info.name || code}</option>
                     ))}
                   </select>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">

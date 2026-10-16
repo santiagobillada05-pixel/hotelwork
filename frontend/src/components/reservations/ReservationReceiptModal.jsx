@@ -25,6 +25,10 @@ export default function ReservationReceiptModal({ reservation, onClose }) {
     )
   );
 
+  const isLegacy = Number(reservation.final_total) > 0 && Number(reservation.final_total) < 2000;
+  const mult = isLegacy ? 4000 : 1;
+  const fmt = (amt) => amt != null ? `$${Math.round(amt * mult).toLocaleString('es-CO')} COP` : '$0 COP';
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm print:p-0 print:bg-white dark:bg-slate-800 animate-fadeIn">
       <div className="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-slate-100 dark:border-slate-700/50 max-h-[92vh] overflow-y-auto print:max-h-none print:shadow-none print:border-none print:rounded-none">
@@ -136,7 +140,7 @@ export default function ReservationReceiptModal({ reservation, onClose }) {
                   {nights}
                 </td>
                 <td className="py-3 text-right font-extrabold text-slate-900 dark:text-slate-50">
-                  ${reservation.base_total?.toFixed(2)} USD
+                  {fmt(reservation.base_total)}
                 </td>
               </tr>
               {reservation.discount_amount > 0 && (
@@ -144,7 +148,7 @@ export default function ReservationReceiptModal({ reservation, onClose }) {
                   <td className="py-2.5 font-medium">Descuento aplicado</td>
                   <td className="py-2.5 text-center">-</td>
                   <td className="py-2.5 text-right font-bold">
-                    -${reservation.discount_amount?.toFixed(2)} USD
+                    -{fmt(reservation.discount_amount)}
                   </td>
                 </tr>
               )}
@@ -152,7 +156,7 @@ export default function ReservationReceiptModal({ reservation, onClose }) {
                 <td className="py-2.5 text-slate-600 dark:text-slate-300">Impuestos (IVA 19%)</td>
                 <td className="py-2.5 text-center">-</td>
                 <td className="py-2.5 text-right font-semibold text-slate-800 dark:text-slate-100">
-                  ${reservation.tax_amount?.toFixed(2)} USD
+                  {fmt(reservation.tax_amount)}
                 </td>
               </tr>
             </tbody>
@@ -162,7 +166,7 @@ export default function ReservationReceiptModal({ reservation, onClose }) {
                   Total Facturado
                 </td>
                 <td className="pt-3 text-right text-brand-700 text-base">
-                  ${reservation.final_total?.toFixed(2)} USD
+                  {fmt(reservation.final_total)}
                 </td>
               </tr>
             </tfoot>

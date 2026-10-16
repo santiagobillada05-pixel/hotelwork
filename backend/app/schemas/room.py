@@ -52,7 +52,7 @@ class RoomCreate(BaseModel):
     room_number: str = Field(..., min_length=1, max_length=10, description="Numero de habitacion, ej: 101")
     room_type: RoomType
     price_per_night: float = Field(..., gt=0, description="Tarifa por noche")
-    currency: str = Field(default="USD", max_length=3, description="Moneda (USD, EUR, COP)")
+    currency: str = Field(default="COP", max_length=3, description="Moneda (COP, USD, EUR)")
     capacity: int = Field(..., ge=1, le=10, description="Capacidad maxima de huespedes")
     description: Optional[str] = Field(None, max_length=1000)
     amenities: Optional[str] = Field(None, description="JSON string de amenidades")
@@ -120,7 +120,7 @@ class RoomResponse(BaseModel):
     room_number: str
     room_type: RoomType
     price_per_night: float
-    currency: str = "USD"
+    currency: str = "COP"
     capacity: int
     description: Optional[str] = None
     amenities: Optional[str] = None

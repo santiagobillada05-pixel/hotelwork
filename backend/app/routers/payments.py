@@ -40,7 +40,7 @@ def register_payment(
         amount=payment_in.amount,
         currency=payment_in.currency,
         exchange_rate=payment_in.exchange_rate,
-        base_currency="USD",
+        base_currency="COP",
         payment_method=payment_in.payment_method,
         status=PaymentStatus.completed,
         transaction_ref=payment_in.transaction_ref,
@@ -107,6 +107,9 @@ def confirm_payment(
         
     if payment.status in [PaymentStatus.failed, PaymentStatus.refunded]:
         raise ConflictException("PAGO_NO_CONFIRMABLE")
+
+    if payment.reservation and payment.reservation.status == ReservationStatus.cancelled:
+        raise ConflictException("No se puede confirmar un pago para una reserva cancelada")
 
     # Update payment to completed
     payment.amount = payment_in.amount

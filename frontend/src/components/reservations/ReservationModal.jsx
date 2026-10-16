@@ -29,15 +29,15 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
   const [checkOutDate, setCheckOutDate] = useState(defaultCheckOut);
   const [numGuests, setNumGuests] = useState(1);
   const [specialRequests, setSpecialRequests] = useState('');
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('COP');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successData, setSuccessData] = useState(null);
 
   const exchangeRates = {
+    COP: { rate: 4000, symbol: '$' },
     USD: { rate: 1, symbol: '$' },
-    EUR: { rate: 0.92, symbol: '€' },
-    COP: { rate: 4000, symbol: '$' }
+    EUR: { rate: 0.92, symbol: '€' }
   };
 
   // Live tariff calculation
@@ -50,7 +50,7 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
 
     if (nights <= 0) return null;
 
-    const roomCurr = room.currency || 'USD';
+    const roomCurr = room.currency || 'COP';
     const rateToTarget = exchangeRates[currency].rate / exchangeRates[roomCurr].rate;
     
     const baseTotal = nights * room.price_per_night * rateToTarget;
@@ -115,7 +115,7 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50">Confirmar Reserva</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Habitación {room.room_number} • ${room.price_per_night} {room.currency || 'USD'} / noche
+              Habitación {room.room_number} • ${(room.currency || 'COP') === 'COP' ? Number(room.price_per_night).toLocaleString('es-CO') : room.price_per_night} {room.currency || 'COP'} / noche
             </p>
           </div>
           <button
@@ -145,7 +145,9 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                 </div>
                 <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Total a pagar:</span>
-                  <span className="font-bold text-slate-900 dark:text-slate-50 text-sm">${successData.final_total} USD</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-50 text-sm">
+                    {calculations ? `${calculations.symbol}${calculations.finalTotal} ${calculations.currency}` : `$${Number(successData.final_total).toLocaleString('es-CO')} COP`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Estado:</span>
@@ -243,9 +245,9 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                     onChange={(e) => setCurrency(e.target.value)}
                     className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
                   >
+                    <option value="COP">COP (Peso Colombiano)</option>
                     <option value="USD">USD (Dólar)</option>
                     <option value="EUR">EUR (Euro)</option>
-                    <option value="COP">COP (Peso Col.)</option>
                   </select>
                 </div>
               </div>

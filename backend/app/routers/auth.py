@@ -20,7 +20,9 @@ router = APIRouter(prefix="/auth", tags=["Autenticación"])
 
 @router.post("/register", response_model=dict, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    """RF01: Registra un nuevo huésped en el sistema."""
+    if not user_in.accepted_terms:
+        raise BadRequestException("Debe aceptar los términos y condiciones para registrar la cuenta")
+
     existing_user = db.query(User).filter(User.email == user_in.email.lower()).first()
     if existing_user:
         raise ConflictException("El correo electrónico ya se encuentra registrado")

@@ -57,7 +57,24 @@ export default function Navbar() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-6">
-            {(!isAuthenticated || user?.role === 'guest') && (
+            {!isAuthenticated && (
+              <>
+                <Link
+                  to="/"
+                  className="text-slate-600 dark:text-slate-300 hover:text-brand-600 text-sm font-medium transition-colors"
+                >
+                  Explorar Habitaciones
+                </Link>
+                <Link
+                  to="/terminos"
+                  className="text-slate-600 dark:text-slate-300 hover:text-brand-600 text-sm font-medium transition-colors"
+                >
+                  Términos y Condiciones
+                </Link>
+              </>
+            )}
+
+            {isAuthenticated && user?.role === 'guest' && (
               <Link
                 to="/"
                 className="text-slate-600 dark:text-slate-300 hover:text-brand-600 text-sm font-medium transition-colors"

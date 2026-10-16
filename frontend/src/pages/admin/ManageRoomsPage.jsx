@@ -26,7 +26,7 @@ export default function ManageRoomsPage() {
     room_number: "",
     room_type: "single",
     price_per_night: "",
-    currency: "USD",
+    currency: "COP",
     capacity: 1,
     description: "",
     amenities: '["WiFi", "Aire acondicionado", "Smart TV"]',
@@ -72,7 +72,7 @@ export default function ManageRoomsPage() {
       room_number: room.room_number,
       room_type: room.room_type,
       price_per_night: room.price_per_night.toString(),
-      currency: room.currency || "USD",
+      currency: room.currency || "COP",
       capacity: room.capacity,
       description: room.description || "",
       amenities: room.amenities || "[]",
@@ -232,7 +232,7 @@ export default function ManageRoomsPage() {
                       </td>
 
                       <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-slate-50">
-                        ${room.price_per_night} {room.currency || "USD"}
+                        ${(room.currency || "COP") === "COP" ? Number(room.price_per_night).toLocaleString("es-CO") : room.price_per_night} {room.currency || "COP"}
                       </td>
 
                       <td className="py-4 px-6">
@@ -346,7 +346,7 @@ export default function ManageRoomsPage() {
                         required
                         value={formData.price_per_night}
                         onChange={(e) => setFormData({ ...formData, price_per_night: e.target.value })}
-                        placeholder="85.00"
+                        placeholder="150000"
                         className="w-2/3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       />
                       <select
@@ -354,9 +354,9 @@ export default function ManageRoomsPage() {
                         onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                         className="w-1/3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       >
+                        <option value="COP">COP</option>
                         <option value="USD">USD</option>
                         <option value="EUR">EUR</option>
-                        <option value="COP">COP</option>
                       </select>
                     </div>
                   </div>

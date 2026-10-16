@@ -135,7 +135,9 @@ export default function MyReservationsPage() {
                 <div className="flex flex-row md:flex-col items-center md:items-end justify-between border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-700/50 gap-3">
                   <div className="text-left md:text-right">
                     <span className="text-xs text-slate-400 block font-medium">Total Facturado</span>
-                    <span className="text-xl font-black text-slate-900 dark:text-slate-50">${res.final_total} USD</span>
+                    <span className="text-xl font-black text-slate-900 dark:text-slate-50">
+                      ${Number(res.final_total) > 0 && Number(res.final_total) < 2000 ? (res.final_total * 4000).toLocaleString('es-CO') : Number(res.final_total).toLocaleString('es-CO')} COP
+                    </span>
                     <span className="text-xs text-slate-400 block">IVA 19% incl.</span>
                   </div>
 

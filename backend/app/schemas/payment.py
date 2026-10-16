@@ -28,7 +28,7 @@ class PaymentCreate(BaseModel):
     """Esquema para registrar un pago."""
     reservation_id: int = Field(..., gt=0)
     amount: float = Field(..., gt=0, description="Monto del pago")
-    currency: str = Field("USD", max_length=3, description="Moneda (ej. USD, MXN)")
+    currency: str = Field("COP", max_length=3, description="Moneda (ej. COP, USD, EUR)")
     exchange_rate: float = Field(1.0, gt=0, description="Tasa de cambio hacia moneda base")
     payment_method: PaymentMethod
     transaction_ref: Optional[str] = Field(None, max_length=100, description="Referencia de transacción")
@@ -43,7 +43,7 @@ class PaymentStatusUpdate(BaseModel):
 
 class PaymentConfirmRequest(BaseModel):
     amount: float
-    currency: str = "USD"
+    currency: str = "COP"
     exchange_rate: float = 1.0
     payment_method: PaymentMethod
     transaction_ref: Optional[str] = None

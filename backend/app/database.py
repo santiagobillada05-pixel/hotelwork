@@ -45,6 +45,7 @@ def init_db() -> None:
     import app.models  # noqa: F401
     Base.metadata.create_all(bind=engine)
     _migrate_image_urls()
+    _migrate_currency_to_cop()
     _seed_default_admin()
 
 def _seed_default_admin() -> None:
@@ -121,3 +122,28 @@ def _migrate_image_urls() -> None:
                 print(f"[init_db] Migrated image_url -> image_urls_json for {len(rows)} room(s).")
         except Exception as e:
             print(f"[init_db] Warning during image_url migration: {e}")
+
+
+def _migrate_currency_to_cop() -> None:
+    """
+    Migration: Ensures that all existing rooms in the database with currency USD
+    are automatically converted to Colombian Pesos (COP) by multiplying by 4000.
+    Safe to run multiple times (idempotent).
+    """
+    with engine.connect() as conn:
+        try:
+            rows = conn.execute(
+                text("SELECT id, price_per_night FROM rooms WHERE currency = 'USD'")
+            ).fetchall()
+            for row in rows:
+                new_price = round(row[1] * 4000)
+                conn.execute(
+                    text("UPDATE rooms SET price_per_night = :new_price, currency = 'COP' WHERE id = :id"),
+                    {"new_price": new_price, "id": row[0]}
+                )
+            if rows:
+                conn.commit()
+                print(f"[init_db] Migrated {len(rows)} room(s) from USD to COP successfully.")
+        except Exception as e:
+            print(f"[init_db] Warning during currency migration: {e}")
+

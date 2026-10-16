@@ -29,7 +29,7 @@ class Room(Base):
     room_number = Column(String(10), unique=True, index=True, nullable=False)
     room_type = Column(SAEnum(RoomType), nullable=False)
     price_per_night = Column(Float, nullable=False)
-    currency = Column(String(3), nullable=False, default="USD")
+    currency = Column(String(3), nullable=False, default="COP")
     capacity = Column(Integer, nullable=False, default=1)
     description = Column(Text, nullable=True)
     amenities = Column(Text, nullable=True)  # JSON string: ["wifi", "minibar", ...]

@@ -21,6 +21,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const formatCOP = (val) => {
+    if (val == null) return '$0 COP';
+    const num = Number(val);
+    const normalized = num > 0 && num < 5000 ? num * 4000 : num;
+    return `$${Math.round(normalized).toLocaleString('es-CO')} COP`;
+  };
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -158,10 +165,10 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="text-3xl font-black text-slate-900 dark:text-slate-50">
-              ${kpis.total_revenue?.toLocaleString()} USD
+              {formatCOP(kpis.total_revenue)}
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
-              Pendiente de cobro: ${kpis.pending_balance?.toLocaleString()} USD
+              Pendiente de cobro: {formatCOP(kpis.pending_balance)}
             </p>
           </div>
 
@@ -266,7 +273,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="text-right">
                       <span className="text-sm font-black text-slate-900 dark:text-slate-50">
-                        ${r.total_amount?.toLocaleString()} USD
+                        {formatCOP(r.total_amount)}
                       </span>
                     </div>
                   </div>

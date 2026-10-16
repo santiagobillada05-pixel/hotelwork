@@ -81,6 +81,7 @@ def create_reservation(
     pending_payment = Payment(
         reservation_id=reservation.id,
         amount=reservation.final_total,
+        currency=room.currency or "COP",
         payment_method=PaymentMethod.cash,
         status=PaymentStatus.pending
     )
@@ -89,11 +90,12 @@ def create_reservation(
     db.refresh(reservation)
 
     # RF10: Mock de notificación
+    formatted_total = f"${reservation.final_total:,.0f}" if (room.currency or "COP") == "COP" else f"${reservation.final_total:.2f}"
     send_notification(
         db=db,
         user_id=current_user.id,
         title="¡Reserva Confirmada!",
-        message=f"Tu reserva para la habitación {room.room_number} del {reservation.check_in_date} al {reservation.check_out_date} ha sido registrada. Total: ${reservation.final_total:.2f}",
+        message=f"Tu reserva para la habitación {room.room_number} del {reservation.check_in_date} al {reservation.check_out_date} ha sido registrada. Total: {formatted_total} {room.currency or 'COP'}",
         notification_type=NotificationType.confirmation,
         reservation_id=reservation.id,
     )

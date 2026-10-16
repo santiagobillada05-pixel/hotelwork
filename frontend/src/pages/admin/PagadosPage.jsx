@@ -219,7 +219,7 @@ export default function PagadosPage() {
 
                         <td className="py-4 px-6">
                           <span className="font-black text-slate-900 dark:text-slate-50 block">
-                            ${record.total_amount} USD
+                            ${Number(record.total_amount) > 0 && Number(record.total_amount) < 2000 ? (record.total_amount * 4000).toLocaleString('es-CO') : Number(record.total_amount).toLocaleString('es-CO')} COP
                           </span>
                           <span className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">
                             {record.payment_method}

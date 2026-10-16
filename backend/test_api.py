@@ -346,6 +346,15 @@ def run_integration_tests():
         "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
     ]
 
+    # Ensure room G02 does not exist from previous runs
+    from app.database import SessionLocal
+    from app.models.room import Room
+    with SessionLocal() as db:
+        old_room = db.query(Room).filter(Room.room_number == "G02").first()
+        if old_room:
+            db.delete(old_room)
+            db.commit()
+
     # T-G1: Create room with image_urls array
     res = client.post(
         "/api/v1/rooms/",

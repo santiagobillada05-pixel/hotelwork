@@ -7,11 +7,11 @@ export default function RecaudacionPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState('COP');
 
   const currencies = {
-    USD: { rate: 1, symbol: '$', locale: 'en-US' },
     COP: { rate: 4000, symbol: '$', locale: 'es-CO' },
+    USD: { rate: 1, symbol: '$', locale: 'en-US' },
     EUR: { rate: 0.92, symbol: '€', locale: 'es-ES' }
   };
 
