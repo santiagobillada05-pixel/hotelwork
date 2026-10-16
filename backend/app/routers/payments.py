@@ -78,7 +78,7 @@ def register_payment(
         db=db,
         user_id=reservation.user_id,
         title="Pago Registrado",
-        message=f"Se ha registrado un pago de ${payment.amount:.2f} ({payment.payment_method.value}) para tu reserva #{reservation.id}.",
+        message=f"Se ha registrado un pago de ${payment.amount:,.0f} COP ({payment.payment_method.value}) para tu reserva #{reservation.id}.",
         notification_type=NotificationType.payment,
         reservation_id=reservation.id,
     )
@@ -153,7 +153,7 @@ def confirm_payment(
         db=db,
         user_id=reservation.user_id,
         title="Pago Registrado",
-        message=f"Se ha registrado un pago de ${payment.amount:.2f} ({payment.payment_method.value}) para tu reserva #{reservation.id}.",
+        message=f"Se ha registrado un pago de ${payment.amount:,.0f} COP ({payment.payment_method.value}) para tu reserva #{reservation.id}.",
         notification_type=NotificationType.payment,
         reservation_id=reservation.id,
     )

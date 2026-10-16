@@ -194,7 +194,7 @@ export default function TermsPage() {
                     <strong>Impuesto al Valor Agregado (IVA):</strong> De acuerdo con la normativa tributaria colombiana de la DIAN, las tarifas de alojamiento para residentes en Colombia causan un <strong>IVA del 19%</strong>, el cual se encuentra detallado en el desglose de su reserva y factura electrónica.
                   </li>
                   <li>
-                    <strong>Monedas extranjeras de referencia:</strong> Cuando el huésped elija visualizar o liquidar su reserva en Dólares Estadounidenses (USD) o Euros (EUR), la conversión se efectuará de forma transparente con la tasa de cambio aplicable mostrada en pantalla antes del pago.
+                    <strong>Moneda de operación:</strong> Todas las tarifas, liquidación de cargos, facturación electrónica y pagos en línea o recepción se efectúan exclusivamente en <strong>Pesos Colombianos (COP)</strong>, la moneda de curso legal en la República de Colombia.
                   </li>
                 </ul>
               </div>

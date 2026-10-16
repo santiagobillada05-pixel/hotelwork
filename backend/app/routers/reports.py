@@ -120,7 +120,7 @@ def export_reservations_csv(
     writer = csv.writer(output)
     writer.writerow([
         "ID_Reserva", "ID_Usuario", "ID_Habitacion", "Check_In", "Check_Out",
-        "Huespedes", "Estado", "Base_Total_USD", "Descuento_USD", "IVA_19_USD", "Total_Final_USD", "Fecha_Creacion"
+        "Huespedes", "Estado", "Base_Total_COP", "Descuento_COP", "IVA_19_COP", "Total_Final_COP", "Fecha_Creacion"
     ])
 
     for r in reservations:
@@ -162,7 +162,7 @@ def export_revenue_csv(
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow([
-        "ID_Pago", "ID_Reserva", "Monto_USD", "Metodo_Pago", "Estado", "Referencia", "Fecha_Pago"
+        "ID_Pago", "ID_Reserva", "Monto_COP", "Metodo_Pago", "Estado", "Referencia", "Fecha_Pago"
     ])
 
     for p in payments:
@@ -248,9 +248,13 @@ def get_recaudacion(
         in_month = start_of_month_utc <= paid_at_utc <= end_of_month_utc
         in_year = start_of_year_utc <= paid_at_utc <= end_of_year_utc
         
-        currency = getattr(p, "currency", "USD")
-        rate = getattr(p, "exchange_rate", 1.0)
-        base_amount = p.amount / rate if rate > 0 else 0
+        currency = getattr(p, "currency", "COP") or "COP"
+        rate = getattr(p, "exchange_rate", 1.0) or 1.0
+        amount = p.amount or 0.0
+        if amount > 0 and amount < 2000 and currency == "USD":
+            amount = amount * 4000.0
+            currency = "COP"
+        base_amount = amount
         
         if in_week:
             totals["week"]["amount"] += base_amount

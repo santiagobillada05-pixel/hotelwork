@@ -7,14 +7,6 @@ export default function RecaudacionPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedCurrency, setSelectedCurrency] = useState('COP');
-
-  const currencies = {
-    COP: { rate: 4000, symbol: '$', locale: 'es-CO' },
-    USD: { rate: 1, symbol: '$', locale: 'en-US' },
-    EUR: { rate: 0.92, symbol: '€', locale: 'es-ES' }
-  };
-
   const fetchRecaudacion = async () => {
     setLoading(true);
     setError('');
@@ -33,12 +25,9 @@ export default function RecaudacionPage() {
   }, [period]);
 
   const formatCurrency = (amount) => {
-    const convertedAmount = amount * currencies[selectedCurrency].rate;
-    return new Intl.NumberFormat(currencies[selectedCurrency].locale, {
-      style: 'currency',
-      currency: selectedCurrency,
-      minimumFractionDigits: selectedCurrency === 'COP' ? 0 : 2
-    }).format(convertedAmount);
+    const num = Number(amount) || 0;
+    const copAmount = num > 0 && num < 2000 ? num * 4000 : num;
+    return `$${Math.round(copAmount).toLocaleString('es-CO')} COP`;
   };
   
   const formatDateRange = (start, end) => {
@@ -67,15 +56,9 @@ export default function RecaudacionPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <select
-            value={selectedCurrency}
-            onChange={(e) => setSelectedCurrency(e.target.value)}
-            className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-500"
-          >
-            {Object.keys(currencies).map(curr => (
-              <option key={curr} value={curr}>{curr}</option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 px-3 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-sm">
+            <span>🇨🇴 COP ($) - Peso Colombiano</span>
+          </div>
           <button
             onClick={fetchRecaudacion}
             disabled={loading}

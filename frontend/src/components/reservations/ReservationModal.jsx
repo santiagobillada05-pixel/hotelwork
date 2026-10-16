@@ -34,12 +34,6 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
   const [error, setError] = useState(null);
   const [successData, setSuccessData] = useState(null);
 
-  const exchangeRates = {
-    COP: { rate: 4000, symbol: '$' },
-    USD: { rate: 1, symbol: '$' },
-    EUR: { rate: 0.92, symbol: '€' }
-  };
-
   // Live tariff calculation
   const calculations = useMemo(() => {
     if (!checkInDate || !checkOutDate) return null;
@@ -50,16 +44,15 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
 
     if (nights <= 0) return null;
 
-    const roomCurr = room.currency || 'COP';
-    const rateToTarget = exchangeRates[currency].rate / exchangeRates[roomCurr].rate;
-    
-    const baseTotal = nights * room.price_per_night * rateToTarget;
-    const taxAmount = baseTotal * 0.19; // 19% IVA
+    const rawPrice = Number(room.price_per_night) || 0;
+    const price = rawPrice > 0 && rawPrice < 2000 ? rawPrice * 4000 : rawPrice;
+    const baseTotal = nights * price;
+    const taxAmount = Math.round(baseTotal * 0.19); // 19% IVA
     const finalTotal = baseTotal + taxAmount;
     
-    const formatAmt = (amt) => new Intl.NumberFormat(currency === 'COP' ? 'es-CO' : 'en-US', {
-      minimumFractionDigits: currency === 'COP' ? 0 : 2,
-      maximumFractionDigits: currency === 'COP' ? 0 : 2
+    const formatAmt = (amt) => new Intl.NumberFormat('es-CO', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amt);
 
     return {
@@ -67,11 +60,11 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
       baseTotal: formatAmt(baseTotal),
       taxAmount: formatAmt(taxAmount),
       finalTotal: formatAmt(finalTotal),
-      symbol: exchangeRates[currency].symbol,
-      currency,
+      symbol: '$',
+      currency: 'COP',
       rawFinalTotal: finalTotal
     };
-  }, [checkInDate, checkOutDate, room.price_per_night, room.currency, currency]);
+  }, [checkInDate, checkOutDate, room.price_per_night]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -115,7 +108,7 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50">Confirmar Reserva</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Habitación {room.room_number} • ${(room.currency || 'COP') === 'COP' ? Number(room.price_per_night).toLocaleString('es-CO') : room.price_per_night} {room.currency || 'COP'} / noche
+              Habitación {room.room_number} • ${Number(room.price_per_night > 0 && room.price_per_night < 2000 ? room.price_per_night * 4000 : room.price_per_night).toLocaleString('es-CO')} COP / noche
             </p>
           </div>
           <button
@@ -240,15 +233,10 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
                     Moneda de Pago
                   </label>
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
-                  >
-                    <option value="COP">COP (Peso Colombiano)</option>
-                    <option value="USD">USD (Dólar)</option>
-                    <option value="EUR">EUR (Euro)</option>
-                  </select>
+                  <div className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 font-bold flex items-center justify-between">
+                    <span>COP (Peso Colombiano)</span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Oficial</span>
+                  </div>
                 </div>
               </div>
 
@@ -275,17 +263,17 @@ export default function ReservationModal({ room, initialCheckIn, initialCheckOut
                   </div>
                   <div className="flex justify-between text-xs text-slate-600 dark:text-slate-300">
                     <span>
-                      {calculations.nights} noche(s) × {calculations.symbol}{new Intl.NumberFormat(currency === 'COP' ? 'es-CO' : 'en-US', { minimumFractionDigits: currency === 'COP' ? 0 : 2, maximumFractionDigits: currency === 'COP' ? 0 : 2 }).format(room.price_per_night * (exchangeRates[currency].rate / exchangeRates[room.currency || 'USD'].rate))} {calculations.currency}
+                      {calculations.nights} noche(s) × ${Number(room.price_per_night > 0 && room.price_per_night < 2000 ? room.price_per_night * 4000 : room.price_per_night).toLocaleString('es-CO')} COP
                     </span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-100">{calculations.symbol}{calculations.baseTotal} {calculations.currency}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-100">${calculations.baseTotal} COP</span>
                   </div>
                   <div className="flex justify-between text-xs text-slate-600 dark:text-slate-300">
                     <span>Impuestos (IVA 19%)</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-100">{calculations.symbol}{calculations.taxAmount} {calculations.currency}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-100">${calculations.taxAmount} COP</span>
                   </div>
                   <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between items-center text-sm font-extrabold text-slate-900 dark:text-slate-50">
                     <span>Total a Pagar</span>
-                    <span className="text-base text-brand-700">{calculations.symbol}{calculations.finalTotal} {calculations.currency}</span>
+                    <span className="text-base text-brand-700">${calculations.finalTotal} COP</span>
                   </div>
                 </div>
               ) : (

@@ -232,7 +232,7 @@ export default function ManageRoomsPage() {
                       </td>
 
                       <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-slate-50">
-                        ${(room.currency || "COP") === "COP" ? Number(room.price_per_night).toLocaleString("es-CO") : room.price_per_night} {room.currency || "COP"}
+                        ${Number(room.price_per_night > 0 && room.price_per_night < 2000 ? room.price_per_night * 4000 : room.price_per_night).toLocaleString("es-CO")} COP
                       </td>
 
                       <td className="py-4 px-6">
@@ -349,15 +349,9 @@ export default function ManageRoomsPage() {
                         placeholder="150000"
                         className="w-2/3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
                       />
-                      <select
-                        value={formData.currency}
-                        onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                        className="w-1/3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-2 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                      >
-                        <option value="COP">COP</option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                      </select>
+                      <div className="w-1/3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl px-2 py-2 text-xs font-bold text-center flex items-center justify-center">
+                        COP ($)
+                      </div>
                     </div>
                   </div>
 

@@ -32,9 +32,7 @@ export default function CheckInOutPage() {
   const [paymentSubmitting, setPaymentSubmitting] = useState(false);
 
   const currencies = {
-    COP: { symbol: '$', name: 'COP (Peso Colombiano)' },
-    USD: { symbol: '$', name: 'USD (Dólar)' },
-    EUR: { symbol: '€', name: 'EUR (Euro)' }
+    COP: { symbol: '$', name: 'COP (Peso Colombiano)' }
   };
 
   const isLegacyUSD = (amount) => Number(amount) > 0 && Number(amount) < 2000;
@@ -95,37 +93,14 @@ export default function CheckInOutPage() {
     setPaymentRef(`TXN-${Date.now().toString().slice(-6)}`);
   };
 
-  const handleCurrencyChange = (newCurrency) => {
-    if (!paymentModalData) return;
-    const baseCop = isLegacyUSD(paymentModalData.final_total) ? paymentModalData.final_total * 4000 : paymentModalData.final_total;
-    
-    let newAmount;
-    if (newCurrency === 'COP') {
-      newAmount = baseCop;
-      setPaymentAmount(new Intl.NumberFormat('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(newAmount));
-    } else if (newCurrency === 'USD') {
-      newAmount = baseCop / 4000;
-      setPaymentAmount(newAmount.toFixed(2));
-    } else if (newCurrency === 'EUR') {
-      newAmount = (baseCop / 4000) * 0.92;
-      setPaymentAmount(newAmount.toFixed(2));
-    }
-    setPaymentCurrency(newCurrency);
-  };
-
   const handleAmountChange = (e) => {
     const val = e.target.value;
-    if (paymentCurrency === 'COP') {
-      // Allow only numbers
-      const numericVal = val.replace(/\D/g, '');
-      if (!numericVal) {
-        setPaymentAmount('');
-        return;
-      }
-      setPaymentAmount(new Intl.NumberFormat('es-CO').format(parseInt(numericVal, 10)));
-    } else {
-      setPaymentAmount(val);
+    const numericVal = val.replace(/\D/g, '');
+    if (!numericVal) {
+      setPaymentAmount('');
+      return;
     }
+    setPaymentAmount(new Intl.NumberFormat('es-CO').format(parseInt(numericVal, 10)));
   };
 
   const handlePaymentSubmit = async (e) => {
@@ -134,18 +109,13 @@ export default function CheckInOutPage() {
     try {
       let parsedAmount = paymentAmount;
       if (typeof parsedAmount === 'string') {
-        if (paymentCurrency === 'COP') {
-          parsedAmount = parseFloat(parsedAmount.replace(/\./g, '').replace(/,/g, ''));
-        } else {
-          parsedAmount = parseFloat(parsedAmount);
-        }
+        parsedAmount = parseFloat(parsedAmount.replace(/\./g, '').replace(/,/g, ''));
       }
       
-      const rate = paymentCurrency === 'COP' ? 1.0 : paymentCurrency === 'USD' ? 4000.0 : 4350.0;
       await paymentsApi.confirmPayment(paymentModalPaymentId, {
         amount: parsedAmount,
-        currency: paymentCurrency,
-        exchange_rate: rate,
+        currency: 'COP',
+        exchange_rate: 1.0,
         payment_method: paymentMethod,
         transaction_ref: paymentRef,
       });
@@ -365,17 +335,12 @@ export default function CheckInOutPage() {
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
                     Moneda de Pago
                   </label>
-                  <select
-                    value={paymentCurrency}
-                    onChange={(e) => handleCurrencyChange(e.target.value)}
-                    className="w-full mb-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                  >
-                    {Object.entries(currencies).map(([code, info]) => (
-                      <option key={code} value={code}>{info.name || code}</option>
-                    ))}
-                  </select>
+                  <div className="w-full mb-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center justify-between">
+                    <span>COP (Peso Colombiano)</span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Moneda Principal</span>
+                  </div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1.5">
-                    Monto a Pagar ({paymentCurrency})
+                    Monto a Pagar (COP)
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-2.5 text-slate-400 font-bold">

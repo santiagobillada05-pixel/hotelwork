@@ -113,10 +113,10 @@ export default function RoomCard({ room, onSelect }) {
           <div className="cursor-pointer" onClick={goToDetail}>
             <span className="text-xs text-slate-400 block font-medium uppercase tracking-wider mb-0.5">Tarifa por noche</span>
             <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-              ${(room.currency || 'COP') === 'COP' ? Number(room.price_per_night).toLocaleString('es-CO') : room.price_per_night}
+              ${(Number(room.price_per_night) > 0 && Number(room.price_per_night) < 2000 ? Number(room.price_per_night) * 4000 : Number(room.price_per_night)).toLocaleString('es-CO')}
             </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium ml-1">
-              {room.currency || 'COP'}
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-bold ml-1.5">
+              COP / noche
             </span>
           </div>
 

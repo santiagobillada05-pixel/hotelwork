@@ -70,17 +70,20 @@ export default function RoomDetailPage() {
     const nights = Math.ceil(diff / (1000 * 60 * 60 * 24));
     if (nights <= 0) return null;
 
-    const base = nights * room.price_per_night;
-    const tax = base * 0.19;
+    const price = Number(room.price_per_night) > 0 && Number(room.price_per_night) < 2000 
+      ? Number(room.price_per_night) * 4000 
+      : Number(room.price_per_night);
+
+    const base = nights * price;
+    const tax = Math.round(base * 0.19);
     const total = base + tax;
-    const curr = room.currency || 'COP';
-    const isCOP = curr === 'COP';
     return {
       nights,
-      currency: curr,
-      base: isCOP ? Math.round(base).toLocaleString('es-CO') : base.toFixed(2),
-      tax: isCOP ? Math.round(tax).toLocaleString('es-CO') : tax.toFixed(2),
-      total: isCOP ? Math.round(total).toLocaleString('es-CO') : total.toFixed(2),
+      currency: 'COP',
+      price: price.toLocaleString('es-CO'),
+      base: base.toLocaleString('es-CO'),
+      tax: tax.toLocaleString('es-CO'),
+      total: total.toLocaleString('es-CO'),
     };
   }, [room, checkIn, checkOut]);
 
@@ -264,9 +267,9 @@ export default function RoomDetailPage() {
               <div className="flex items-baseline justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-700/50">
                 <div>
                   <span className="text-3xl font-black text-slate-900 dark:text-slate-50">
-                    ${(room.currency || 'COP') === 'COP' ? Number(room.price_per_night).toLocaleString('es-CO') : room.price_per_night}
+                    ${(Number(room.price_per_night) > 0 && Number(room.price_per_night) < 2000 ? Number(room.price_per_night) * 4000 : Number(room.price_per_night)).toLocaleString('es-CO')}
                   </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-bold"> {room.currency || 'COP'} / noche</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-bold"> COP / noche</span>
                 </div>
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                   room.is_room_bookable
@@ -374,18 +377,18 @@ export default function RoomDetailPage() {
                     <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 space-y-1.5 text-xs">
                       <div className="flex justify-between text-slate-600 dark:text-slate-300">
                         <span>
-                          {calculations.nights} noche(s) x ${(room.currency || 'COP') === 'COP' ? Number(room.price_per_night).toLocaleString('es-CO') : room.price_per_night}
+                          {calculations.nights} noche(s) x ${calculations.price} COP
                         </span>
-                        <span className="font-semibold text-slate-900 dark:text-slate-50">${calculations.base} {calculations.currency}</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-50">${calculations.base} COP</span>
                       </div>
                       <div className="flex justify-between text-slate-600 dark:text-slate-300">
                         <span>IVA (19%)</span>
-                        <span className="font-semibold text-slate-900 dark:text-slate-50">${calculations.tax} {calculations.currency}</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-50">${calculations.tax} COP</span>
                       </div>
                       <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between font-black text-slate-900 dark:text-slate-50 text-sm">
                         <span>Total</span>
                         <span className="text-brand-700 font-extrabold text-base">
-                          ${calculations.total} {calculations.currency}
+                          ${calculations.total} COP
                         </span>
                       </div>
                     </div>
