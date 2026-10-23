@@ -15,13 +15,20 @@ class Settings(BaseSettings):
     TAX_RATE: float = 0.19
     DEFAULT_DISCOUNT_RATE: float = 0.0
     CORS_ORIGINS: str = "http://localhost:5173"
+    DEFAULT_ADMIN_EMAIL: str = "agudelosantiago.inedan@gmail.com"
+    DEFAULT_ADMIN_PASSWORD: str = "Luissanti0820"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
 
     @property
     def cors_origins_list(self) -> list[str]:
         """Returns CORS origins as a list."""
-        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        origins = [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        dev_defaults = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:80", "http://localhost"]
+        for dev in dev_defaults:
+            if dev not in origins:
+                origins.append(dev)
+        return origins
 
 @lru_cache
 def get_settings() -> Settings:

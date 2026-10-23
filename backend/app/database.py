@@ -1,7 +1,7 @@
 """Database configuration and connection management."""
 
 import json
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, event
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from app.config import get_settings
 
@@ -12,6 +12,17 @@ if settings.DATABASE_URL.startswith("sqlite"):
     connect_args["check_same_thread"] = False
 
 engine = create_engine(settings.DATABASE_URL, connect_args=connect_args)
+
+@event.listens_for(engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    """Configura pragmas de SQLite para integridad referencial y alta concurrencia."""
+    if settings.DATABASE_URL.startswith("sqlite"):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA busy_timeout=5000")
+        cursor.close()
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
@@ -70,12 +81,12 @@ def _seed_default_admin() -> None:
             print("[init_db] Default admin user created.")
             
         # Ensure Santiago's admin account exists
-        santiago_email = "agudelosantiago.inedan@gmail.com"
+        santiago_email = getattr(settings, "DEFAULT_ADMIN_EMAIL", "agudelosantiago.inedan@gmail.com")
         santiago_user = db.query(User).filter(User.email == santiago_email).first()
         if not santiago_user:
             santiago_admin = User(
                 email=santiago_email,
-                hashed_password=hash_password("Luissanti0820"),
+                hashed_password=hash_password(getattr(settings, "DEFAULT_ADMIN_PASSWORD", "Luissanti0820")),
                 first_name="Santiago",
                 last_name="Agudelo",
                 role=UserRole.admin,
@@ -85,11 +96,17 @@ def _seed_default_admin() -> None:
             db.commit()
             print("[init_db] Santiago admin user created.")
         else:
-            # If exists but not admin, promote him and update password just in case
-            santiago_user.role = UserRole.admin
-            santiago_user.hashed_password = hash_password("Luissanti0820")
-            db.commit()
-            print("[init_db] Santiago admin user updated.")
+            # If exists, ensure role is admin and active, but preserve existing password hash
+            updated = False
+            if santiago_user.role != UserRole.admin:
+                santiago_user.role = UserRole.admin
+                updated = True
+            if not santiago_user.is_active:
+                santiago_user.is_active = True
+                updated = True
+            if updated:
+                db.commit()
+                print("[init_db] Santiago admin role and status verified.")
 
 
 def _migrate_image_urls() -> None:

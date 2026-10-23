@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, DateTime, Date, Float, Text, ForeignKey, Enum as SAEnum
+from sqlalchemy import Column, Integer, String, DateTime, Date, Float, Text, ForeignKey, Enum as SAEnum, Index
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -17,6 +17,9 @@ class ReservationStatus(str, enum.Enum):
 class Reservation(Base):
     """Modelo ORM para reservas de habitaciones."""
     __tablename__ = "reservations"
+    __table_args__ = (
+        Index("idx_reservation_room_dates", "room_id", "check_in_date", "check_out_date"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
